@@ -1,0 +1,30 @@
+version: "3.9"
+
+services:
+  webserver:
+    container_name: webserver
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "81:80"
+    volumes:
+      # - laravel-api-vendor:/var/www/backend-api/vendor
+      - ./services/:/var/www/
+      - ./config/nginx/:/etc/nginx/sites-enabled/
+
+  mongodb:
+    container_name: mongodb
+    image: mongo
+    ports:
+      - "27017:27017"  # Sửa lại để đảm bảo đúng port
+    environment:
+      MONGO_UI : ${MONGO_URI}
+    volumes:
+      - mongo-database:/data/db
+
+volumes:
+  mongo-database:
+
+
+  # laravel-api-vendor:
