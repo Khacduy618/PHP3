@@ -1,4 +1,4 @@
-version: "3.9"
+version: '3'
 
 services:
   webserver:
@@ -9,22 +9,32 @@ services:
     ports:
       - "81:80"
     volumes:
-      # - laravel-api-vendor:/var/www/backend-api/vendor
-      - ./services/:/var/www/
-      - ./config/nginx/:/etc/nginx/sites-enabled/
+      - webserver-api-vendor:/var/app/laravel-api/vendor
+      - ./configurations/nginx/:/etc/nginx/sites-enabled/
+      - ./services/:/var/app/
+    environment:
+      - DB_CONNECTION=mongodb
+      - DB_DATABASE=KhacDuy
+      - MONGO_URI=mongodb+srv://khacduy584:123456789Aa@khacduy.o5rgx.mongodb.net/?retryWrites=true&w=majority&appName=KhacDuy
+    depends_on:
+      - mongodb
 
   mongodb:
     container_name: mongodb
-    image: mongo
+    image: mongo:latest
     ports:
-      - "27017:27017"  # Sửa lại để đảm bảo đúng port
+      - "27017:27017"
     environment:
-      MONGO_UI : ${MONGO_URI}
+      - MONGO_INITDB_ROOT_USERNAME=khacduy584
+      - MONGO_INITDB_ROOT_PASSWORD=123456789Aa
+      - MONGO_INITDB_DATABASE=KhacDuy
     volumes:
-      - mongo-database:/data/db
+      - ./configurations/mongo-database:/data/db
 
 volumes:
-  mongo-database:
-
-
-  # laravel-api-vendor:
+  webserver-api-vendor:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./services/laravel-api/vendor/

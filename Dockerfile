@@ -1,29 +1,47 @@
 FROM ubuntu:20.04
 
-RUN apt-get update && apt-get install -y software-properties-common
+RUN apt update -y && apt install -y software-properties-common
 
 RUN add-apt-repository ppa:ondrej/php -y
 
-RUN apt-get update -y && apt-get install nginx php8.2-fpm -y
+RUN apt-get update -y && apt-get install -y \
+    nginx \
+    php8.4-fpm \
+    php8.4-mongodb \
+    php8.4-curl \
+    php8.4-dom \
+    php8.4-mbstring \
+    php8.4-xml \
+    php8.4-bcmath \
+    curl \
+    git \
+    zip \
+    unzip \
+    libssl-dev \
+    pkg-config \
+    libcurl4-openssl-dev \
+    libssl-dev \
+    libz-dev \
+    libjpeg-dev \
+    libpng-dev \
+    libfreetype6-dev
 
-RUN apt-get install curl git zip unzip redis -y
+RUN curl https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-RUN curl https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin/ --filename=composer
+WORKDIR /var/app
 
-WORKDIR /var/www
+COPY ./services/laravel-api/composer.* /var/app/laravel-api/
 
-RUN apt-get update -y && apt-get install php8.2-mongodb php8.2-dom php8.2-curl php8.2-redis -y
+RUN cd /var/app/laravel-api/ && composer install --ignore-platform-reqs --no-autoloader --no-suggest --no-scripts
 
-# COPY ./services/backend-api/composer.json /var/www/backend-api/
+COPY ./configurations/nginx/ /etc/nginx/sites-enabled/
 
-# RUN cd /var/www/backend-api/ && composer install --ignore-platform-reqs --no-autoloader --no-suggest --no-scripts
+COPY ./services/ ./
 
-COPY ./services/ .
+RUN cd /var/app/laravel-api/ && chown -R www-data:www-data storage
 
-# RUN cd /var/www/backend-api/ && composer update --ignore-platform-reqs --no-install || composer install --ignore-platform-reqs
+RUN cd /var/app/laravel-api/ && composer dump-autoload
 
-COPY ./config/nginx/ /etc/nginx/sites-enabled/
+CMD /etc/init.d/php8.4-fpm start && nginx -g "daemon off;"
 
-CMD /etc/init.d/php8.2-fpm start && /etc/init.d/redis-server start && nginx -g "daemon off;"
-
-EXPOSE 80
+EXPOSE 8000
