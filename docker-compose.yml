@@ -1,5 +1,3 @@
-version: '3'
-
 services:
   webserver:
     container_name: webserver
@@ -8,20 +6,23 @@ services:
       dockerfile: Dockerfile
     ports:
       - "81:80"
+      - "3000:3000"
     volumes:
-      - webserver-api-vendor:/var/app/laravel-api/vendor
+      - ./services/laravel-api:/var/app/laravel-api
+      - ./services/nodejs-api:/var/app/nodejs-api
       - ./configurations/nginx/:/etc/nginx/sites-enabled/
       - ./services/:/var/app/
     environment:
       - DB_CONNECTION=mongodb
       - DB_DATABASE=KhacDuy
-      - MONGO_URI=mongodb+srv://khacduy584:123456789Aa@khacduy.o5rgx.mongodb.net/?retryWrites=true&w=majority&appName=KhacDuy
+      - MONGO_URI=mongodb://khacduy584:123456789Aa@mongodb:27017/KhacDuy?authSource=admin
     depends_on:
       - mongodb
 
   mongodb:
     container_name: mongodb
     image: mongo:latest
+    restart: always
     ports:
       - "27017:27017"
     environment:
@@ -30,6 +31,7 @@ services:
       - MONGO_INITDB_DATABASE=KhacDuy
     volumes:
       - ./configurations/mongo-database:/data/db
+    command: mongod --bind_ip_all
 
 volumes:
   webserver-api-vendor:
