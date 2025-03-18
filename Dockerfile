@@ -34,25 +34,29 @@ RUN cd /var/app/laravel-api/ && composer install --ignore-platform-reqs --no-aut
 
 COPY ./configurations/nginx/ /etc/nginx/sites-enabled/
 COPY ./services/ ./
-
-# Cài đặt Node.js và pnpm
+# Cài Node.js và pnpm
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && apt-get install -y nodejs
 
-RUN node -v && npm -v
-
-# Cài đặt Corepack và kích hoạt pnpm
 RUN npm install -g corepack && \
     corepack enable && \
     corepack prepare pnpm@10.6.4 --activate && \
     corepack use pnpm@10.6.4
 
-# Copy package.json trước để tối ưu cache
-COPY ./services/nodejs-api/package.json ./services/nodejs-api/pnpm-lock.yaml /var/app/nodejs-api/
+# Copy trước package.json và lockfile để tối ưu cache
 WORKDIR /var/app/nodejs-api
+COPY ./services/nodejs-api/package.json ./services/nodejs-api/pnpm-lock.yaml ./
+
+# Cài dependencies
 RUN pnpm install --frozen-lockfile
+
+# Copy toàn bộ mã nguồn vào container
 COPY ./services/nodejs-api/ ./
 
+# Kiểm tra thư mục node_modules
+RUN ls -la /var/app/nodejs-api/node_modules
 EXPOSE 8000 3000
 
-# Khởi động PHP-FPM và Nginx
-CMD service php8.4-fpm start && nginx -g "daemon off;"
+CMD service php8.4-fpm start && \
+    nginx -g "daemon off;" && \
+    cd /var/app/nodejs-api && \
+    pnpm star
