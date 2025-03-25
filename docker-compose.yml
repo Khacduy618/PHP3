@@ -1,5 +1,3 @@
-version: '3'
-
 services:
   webserver:
     container_name: webserver
@@ -11,7 +9,7 @@ services:
     volumes:
       - webserver-api-vendor:/var/app/laravel-api/vendor
       - ./configurations/nginx/:/etc/nginx/sites-enabled/
-      - ./services/:/var/app/
+      - ./services/laravel-api/:/var/app/laravel-api/
     environment:
       - DB_CONNECTION=mongodb
       - DB_DATABASE=KhacDuy

@@ -44,4 +44,4 @@ RUN cd /var/app/laravel-api/ && composer dump-autoload
 
 CMD /etc/init.d/php8.4-fpm start && nginx -g "daemon off;"
 
-EXPOSE 8000
+EXPOSE 80

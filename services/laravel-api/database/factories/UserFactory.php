@@ -27,8 +27,16 @@ class UserFactory extends Factory
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
-            'password' => static::$password ??= Hash::make('password'),
+            'password' => Hash::make('password'), // Đặt mật khẩu mặc định
+            'avatar' => fake()->imageUrl(200, 200, 'people'), // Ảnh đại diện ngẫu nhiên
+            'gender' => fake()->randomElement(['male', 'female']),
+            'phone' => fake()->phoneNumber(),
+            'address' => fake()->address(),
+            'status' => fake()->randomElement(['active', 'inactive']),
+            'role' => fake()->randomElement(['admin', 'editor', 'writer', 'user']),
             'remember_token' => Str::random(10),
+            'created_at' => now(),
+            'updated_at' => now()
         ];
     }
 
