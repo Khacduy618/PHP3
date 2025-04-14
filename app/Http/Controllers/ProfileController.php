@@ -5,8 +5,12 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ProfileUpdateRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+// Removed duplicate imports below
+// use Illuminate\Http\RedirectResponse;
+// use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage; // Import Storage facade
 use Illuminate\View\View;
 
 class ProfileController extends Controller
@@ -16,8 +20,10 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): View
     {
+        $page_title = 'Thông tin cá nhân';
         return view('profile.edit', [
             'user' => $request->user(),
+            'page_title' => $page_title
         ]);
     }
 
@@ -30,6 +36,16 @@ class ProfileController extends Controller
 
         if ($request->user()->isDirty('email')) {
             $request->user()->email_verified_at = null;
+        }
+
+        // Handle avatar upload
+        if ($request->hasFile('avatar')) {
+            // Delete old avatar if it exists
+            if ($request->user()->avatar && Storage::disk('public')->exists($request->user()->avatar)) {
+                Storage::disk('public')->delete($request->user()->avatar);
+            }
+            // Store new avatar and update the path on the user model
+            $request->user()->avatar = $request->file('avatar')->store('avatars', 'public');
         }
 
         $request->user()->save();

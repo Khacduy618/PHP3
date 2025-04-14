@@ -2,12 +2,12 @@
     <div class="container">
         <div class="row">
             <div class="col-10 fh5co_mediya_center"><a href="#" class="color_fff fh5co_mediya_setting"><i
-                        class="fa fa-clock-o"></i>&nbsp;&nbsp;&nbsp;Friday, 5 January 2018</a>
-                <div class="d-inline-block fh5co_trading_posotion_relative"><a href="#" class="treding_btn">Trending</a>
+                        class="fa fa-clock-o"></i>&nbsp;&nbsp;&nbsp;Thứ Sáu, 5 tháng 1 2018</a>
+                <div class="d-inline-block fh5co_trading_posotion_relative"><a href="#" class="treding_btn">Xu Hướng</a>
                     <div class="fh5co_treding_position_absolute"></div>
                 </div>
-                <a href="#" class="color_fff fh5co_mediya_setting">Instagram’s big redesign goes live with
-                    black-and-white app</a>
+                <a href="#" class="color_fff fh5co_mediya_setting">Thiết kế lại lớn của Instagram ra mắt với
+                    ứng dụng đen trắng</a>
             </div>
             {{-- Moved Auth Block Here --}}
             <div class="col-2 ms-auto d-flex justify-content-center align-items-center">
@@ -15,11 +15,11 @@
                     {{-- Show Login/Register if guest --}}
                     @if (Route::has('login'))
                         <a href="{{ route('login') }}" class="btn color_fff fh5co_mediya_setting"
-                            style="text-decoration: none; margin-right: 10px;">Login</a>
+                            style="text-decoration: none; margin-right: 10px;">Đăng nhập</a>
                     @endif
                     @if (Route::has('register'))
                         <a href="{{ route('register') }}" class="color_fff fh5co_mediya_setting"
-                            style="text-decoration: none;">Register</a>
+                            style="text-decoration: none;">Đăng ký</a>
                     @endif
                 @else
                     {{-- Show User Dropdown if logged in --}}
@@ -36,10 +36,10 @@
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdownMenuLink"
                             style="min-width: auto; font-size: 0.9rem;"> {{-- Adjusted dropdown style --}}
-                            <li><a class="dropdown-item" href="{{ route('profile.edit') }}">Profile</a></li>
+
                             {{-- Admin Link (Conditional) - Assuming 'admin' role and 'admin.dashboard' route --}}
                             @if (Auth::user()->role === 'admin')
-                                <li><a class="dropdown-item" href="{{ route('admin.dashboard') }}">Admin</a></li>
+                                <li><a class="dropdown-item" href="{{ route('admin.dashboard') }}">Quản trị</a></li>
                                 <li>
                                     <hr class="dropdown-divider">
                                 </li>
@@ -50,7 +50,7 @@
                                     @csrf
                                     <a class="dropdown-item" href="{{ route('logout') }}"
                                         onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                        Logout
+                                        Đăng xuất
                                     </a>
                                 </form>
                             </li>
@@ -77,7 +77,7 @@
                     {{-- Search Input Box (Initially Hidden) --}}
                     <form action="{{ route('news.search') }}" method="GET" id="search-form"
                         style="display: none; position: absolute; top: 5px; right: 300px; z-index: 1000; background: white; padding: 5px; border: 1px solid #ccc; border-radius: 5px;">
-                        <input type="text" name="query" placeholder="Search news..." required
+                        <input type="text" name="query" placeholder="Tìm kiếm tin tức..." required
                             style="border: none; outline: none; padding: 5px;">
                         <button type="submit"
                             style="background: none; border: none; padding: 0 5px; cursor: pointer;"><i
@@ -108,10 +108,11 @@
                 <!--<div class="d-inline-block text-center"><img src="{{ asset('site/images/country.png') }}" alt="img" class="fh5co_country_width"/></div>-->
                 <div class="d-inline-block text-center dd_position_relative ">
                     <select class="form-control fh5co_text_select_option">
-                        <option>English </option>
-                        <option>French </option>
-                        <option>German </option>
-                        <option>Spanish </option>
+                        <option value="">Tiếng Việt</option>
+                        <option>Tiếng Anh </option>
+                        <option>Tiếng Pháp </option>
+                        <option>Tiếng Đức </option>
+                        <option>Tiếng Tây Ban Nha </option>
                     </select>
                 </div>
 

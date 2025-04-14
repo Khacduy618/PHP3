@@ -58,11 +58,11 @@
                                 <div class="form-check">
                                     <input id="remember_me" type="checkbox" class="form-check-input" name="remember">
                                     <label for="remember_me"
-                                        class="form-check-label text-muted"><small>{{ __('Remember me') }}</small></label>
+                                        class="form-check-label text-muted"><small>{{ __('Ghi nhớ tôi') }}</small></label>
                                 </div>
                                 @if (Route::has('password.request'))
                                     <a class="text-muted" style="font-size: 0.9em;" href="{{ route('password.request') }}">
-                                        <small>{{ __('Forgot Password?') }}</small>
+                                        <small>{{ __('Quên mật khẩu?') }}</small>
                                     </a>
                                 @endif
                             </div>
@@ -73,11 +73,11 @@
                                 <button type="submit" class="btn btn-primary btn-lg w-100"
                                     style="background-color: #ff6f61; border-color: #ff6f61; border-radius: 25px; font-weight: 600;">
                                     {{-- Orange color, rounded, bold --}}
-                                    {{ __('Sign in') }}
+                                    {{ __('Đăng nhập') }}
                                 </button>
                             </div>
 
-                            <div class="text-center text-muted my-4"><small>Or login with</small></div>
+                            <div class="text-center text-muted my-4"><small>Hoặc đăng nhập với</small></div>
 
                             <!-- Social Login Buttons -->
                             <div class="d-flex gap-3 mb-4">
@@ -96,7 +96,7 @@
                         </form>
 
                         <div class="text-center text-muted mt-4">
-                            <small> Don't have an account? <a href="{{ route('register') }}">Sign Up now</a></small>
+                            <small> Chưa có tài khoản? <a href="{{ route('register') }}">Đăng ký ngay</a></small>
                         </div>
                     </div>
                 </div>

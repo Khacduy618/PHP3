@@ -14,8 +14,9 @@ class EmailVerificationPromptController extends Controller
      */
     public function __invoke(Request $request): RedirectResponse|View
     {
+        $page_title = 'Xác minh Email - ' . config('app.name', 'Laravel');
         return $request->user()->hasVerifiedEmail()
-                    ? redirect()->intended(route('dashboard', absolute: false))
-                    : view('auth.verify-email');
+            ? redirect()->intended(route('dashboard', absolute: false))
+            : view('auth.verify-email', compact('page_title'));
     }
 }

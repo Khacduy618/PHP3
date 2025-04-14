@@ -8,7 +8,7 @@
                 <li class="pc-item">
                     <a href="{{ route('admin.dashboard') }}" class="pc-link">
                         <span class="pc-micon"><i class="ti ti-dashboard"></i></span>
-                        <span class="pc-mtext">Dashboard</span>
+                        <span class="pc-mtext">Bảng điều khiển</span>
                     </a>
                 </li>
                 <!-- 
@@ -95,6 +95,17 @@
                                 </li>
                             </ul>
                         </li> -->
+                    </ul>
+                </li>
+                <li class="pc-item pc-hasmenu"> {{-- User Management Menu --}}
+                    <a href="#" class="pc-link"><span class="pc-micon"><i class="ti ti-users"></i></span><span
+                            class="pc-mtext">Quản lý Người dùng</span><span class="pc-arrow"><i
+                                data-feather="chevron-right"></i></span></a>
+                    <ul class="pc-submenu">
+                        <li class="pc-item"><a class="pc-link" href="{{ route('admin.users.create') }}">Thêm Người
+                                dùng</a></li>
+                        <li class="pc-item"><a class="pc-link" href="{{ route('admin.users.index') }}">Danh sách Người
+                                dùng</a></li>
                     </ul>
                 </li>
                 <li class="pc-item pc-hasmenu">

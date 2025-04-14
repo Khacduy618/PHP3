@@ -3,7 +3,7 @@
     <div class="container-fluid pb-4 pt-5">
         <div class="container animate-box">
             <div>
-                <div class="fh5co_heading fh5co_heading_border_bottom py-2 mb-4">Trending</div>
+                <div class="fh5co_heading fh5co_heading_border_bottom py-2 mb-4">Xu Hướng</div>
             </div>
             {{-- Keep original Owl Carousel ID and classes --}}
             <div class="owl-carousel owl-theme" id="slider2">

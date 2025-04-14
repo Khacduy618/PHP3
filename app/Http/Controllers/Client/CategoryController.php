@@ -28,7 +28,7 @@ class CategoryController extends Controller
             ->where('category_id', $category->id)
             ->where('status', 'published')
             ->with(['category', 'user'])
-            ->withCount(['likes', 'comments']); // Add counts for sorting
+            ->withCount(['likers', 'comments']); // Ensure using 'likers'
 
         // Sorting logic
         $sortBy = $request->input('sort_by', 'date'); // Default to date
@@ -37,7 +37,7 @@ class CategoryController extends Controller
                 $newsQuery->orderByDesc('views');
                 break;
             case 'likes':
-                $newsQuery->orderByDesc('likes_count');
+                $newsQuery->orderByDesc('likers_count'); // Ensure using 'likers_count'
                 break;
             case 'comments':
                 $newsQuery->orderByDesc('comments_count');
@@ -79,8 +79,10 @@ class CategoryController extends Controller
             ->limit(10)
             ->get();
 
+        $page_title = 'Danh mục: ' . $category->name . ' - ' . config('APP_NAME', 'Laravel');
         // Pass all data (category, news, sidebar data) to the view
         return view('client.tintrongloai.index', compact(
+            'page_title',
             'category',
             'newsItems',
             'hotNews',

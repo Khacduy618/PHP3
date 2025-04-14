@@ -14,7 +14,7 @@
                         <img src="{{ Storage::url($newsItem->user->avatar) }}" alt="{{ $newsItem->user->name }} Avatar"
                             onerror="this.onerror=null;this.src='{{ asset('site/images/person_1.jpg') }}';">
                     @else
-                        <img src="{{ asset('site/images/person_1.jpg') }}" alt="Default Avatar">
+                        <img src="{{ asset('site/images/person_1.jpg') }}" alt="Ảnh đại diện mặc định">
                     @endif
                     {{-- Author Name and Date --}}
                     <span>
@@ -73,7 +73,7 @@
                             @php $tagsArray = json_decode($newsItem->tags, true); @endphp
                             @if (is_array($tagsArray) && !empty($tagsArray))
                                 <div class="pt-4">
-                                    <strong>Tags:</strong>
+                                    <strong>Thẻ:</strong>
                                     {{-- Loop through the decoded tags array --}}
                                     @foreach ($tagsArray as $tag)
                                         @if ($tag) {{-- Check if tag is not empty/null --}}
@@ -100,7 +100,7 @@
             @if (isset($relatedNews) && $relatedNews->count() > 0)
                 <div class="container-fluid pb-4 pt-5"> {{-- Added container structure like trending block --}}
                     <div class="container animate-box">
-                        <div class="fh5co_heading fh5co_heading_border_bottom py-2 mb-4">Related News</div>
+                        <div class="fh5co_heading fh5co_heading_border_bottom py-2 mb-4">Tin tức liên quan</div>
                         {{-- Use Owl Carousel structure like trending block, using ID slider2 --}}
                         <div class="owl-carousel owl-theme" id="slider2"> {{-- Reverted ID to slider2 --}}
                             @foreach ($relatedNews as $related)

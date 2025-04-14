@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>{{ $page_title }}</title>
 
     <!-- Kiểm tra đường dẫn asset -->
     <link href="{{ asset('site/css/media_query.css') }}" rel="stylesheet" type="text/css" />

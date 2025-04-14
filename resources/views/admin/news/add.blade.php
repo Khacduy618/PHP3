@@ -75,7 +75,7 @@
 
             {{-- Tags --}}
             <div class="mb-3">
-                <label for="tags" class="form-label">Tags (cách nhau bởi dấu phẩy)</label>
+                <label for="tags" class="form-label">Thẻ (cách nhau bởi dấu phẩy)</label>
                 <input type="text" class="form-control @error('tags') is-invalid @enderror" id="tags" name="tags"
                     placeholder="VD: thể thao, bóng đá,..." value="{{ old('tags') }}">
                 @error('tags')

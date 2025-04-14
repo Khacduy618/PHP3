@@ -12,9 +12,9 @@
             <div class="col-6 p-0" style="height:fit-content;">
                 <div class="card shadow-lg border-0 rounded-end">
                     <div class="card-body p-4 p-md-5"> {{-- Keep padding --}}
-                        <h1 class="text-center mb-3" style="font-weight: 600;">Create an account</h1>
+                        <h1 class="text-center mb-3" style="font-weight: 600;">Tạo tài khoản</h1>
                         <div class="text-center text-muted mb-4">
-                            <small> Already have an account? <a href="{{ route('login') }}">Log in</a></small>
+                            <small> Đã có tài khoản? <a href="{{ route('login') }}">Đăng nhập</a></small>
                         </div>
 
                         {{-- Session Status (Optional) --}}
@@ -59,7 +59,7 @@
                                 <input id="password"
                                     class="form-control form-control-lg @error('password') is-invalid @enderror"
                                     type="password" name="password" required autocomplete="new-password"
-                                    placeholder="Enter your password"
+                                    placeholder="Nhập mật khẩu của bạn"
                                     style="border-radius: 10px; background-color: #f8f9fa;" /> {{-- Rounded, light bg --}}
                                 {{-- Simple text toggle, replace with icon if FontAwesome is available --}}
                                 {{-- <span class="password-toggle"
@@ -77,7 +77,7 @@
                             <div class="form-group mb-3 position-relative">
                                 <input id="password_confirmation" class="form-control form-control-lg" type="password"
                                     name="password_confirmation" required autocomplete="new-password"
-                                    placeholder="Confirm Password"
+                                    placeholder="Xác nhận mật khẩu"
                                     style="border-radius: 10px; background-color: #f8f9fa;" />
                             </div>
 
@@ -85,8 +85,8 @@
                             <div class="form-check mb-4">
                                 <input id="terms" type="checkbox"
                                     class="form-check-input @error('terms') is-invalid @enderror" name="terms" required>
-                                <label for="terms" class="form-check-label text-muted"><small>I agree to the <a
-                                            href="#">Terms & Conditions</a></small></label>
+                                <label for="terms" class="form-check-label text-muted"><small>Tôi đồng ý với <a
+                                            href="#">Điều khoản & Điều kiện</a></small></label>
                                 @error('terms')
                                     <span class="invalid-feedback d-block" role="alert"> {{-- Ensure error shows --}}
                                         <strong>{{ $message }}</strong>
@@ -100,11 +100,11 @@
                                 <button type="submit" class="btn btn-primary btn-lg w-100"
                                     style="background-color: #6f42c1; border-color: #6f42c1; border-radius: 10px; font-weight: 600;">
                                     {{-- Purple color like image, less rounded --}}
-                                    {{ __('Create account') }}
+                                    {{ __('Tạo tài khoản') }}
                                 </button>
                             </div>
 
-                            <div class="text-center text-muted my-4"><small>Or register with</small></div>
+                            <div class="text-center text-muted my-4"><small>Hoặc đăng ký với</small></div>
 
                             <!-- Social Login Buttons -->
                             <div class="d-flex gap-3 mb-4">

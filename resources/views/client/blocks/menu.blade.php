@@ -12,7 +12,8 @@
                 <ul class="navbar-nav mr-auto">
                     {{-- Home Link --}}
                     <li class="nav-item {{ request()->routeIs('home') ? 'active' : '' }}">
-                        <a class="nav-link" href="{{ route('home') }}">Home <span class="sr-only">(current)</span></a>
+                        <a class="nav-link" href="{{ route('home') }}">Trang chủ <span
+                                class="sr-only">(current)</span></a>
                     </li>
 
                     {{-- Dynamic Categories from MenuComposer --}}

@@ -19,7 +19,8 @@ class RegisteredUserController extends Controller
      */
     public function create(): View
     {
-        return view('auth.register');
+        $page_title = 'Đăng ký - ' . config('app.name', 'Laravel');
+        return view('auth.register', compact('page_title'));
     }
 
     /**

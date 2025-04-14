@@ -82,9 +82,10 @@ class NewsController extends Controller
             $likedCommentIds = Auth::user()->likedComments()->whereIn('comment_id', $commentIds)->pluck('comment_id')->toArray();
         }
 
+        $page_title = $newsItem->title . ' - ' . config('app.name', 'Laravel');
 
         // Assuming you have a view file at resources/views/client/chitiettin/index.blade.php
-        return view('client.chitiettin.index', compact('newsItem', 'hotNews', 'allTags', 'relatedNews', 'trendingNews', 'likedCommentIds'));
+        return view('client.chitiettin.index', compact('page_title', 'newsItem', 'hotNews', 'allTags', 'relatedNews', 'trendingNews', 'likedCommentIds'));
     }
 
     /**
@@ -106,8 +107,10 @@ class NewsController extends Controller
             ->orderByDesc('created_at')
             ->paginate(10); // Add pagination
 
+        $page_title = 'Danh mục: ' . $category->name . ' - ' . config('app.name', 'Laravel');
+
         // Assuming you have a view file at resources/views/client/tintrongloai/index.blade.php
-        return view('client.tintrongloai.index', compact('category', 'newsInCategory'));
+        return view('client.tintrongloai.index', compact('page_title', 'category', 'newsInCategory'));
     }
 
     /**
@@ -126,7 +129,7 @@ class NewsController extends Controller
             ->whereJsonContains('tags', $decodedTag) // Search JSON array
             ->where('status', 'published')
             ->with(['category', 'user']) // Eager load relationships
-            ->withCount(['likes', 'comments']); // Add counts for sorting
+            ->withCount(['likers', 'comments']); // Ensure using 'likers'
 
         // Sorting logic
         $sortBy = $request->input('sort_by', 'date'); // Default to date
@@ -135,7 +138,7 @@ class NewsController extends Controller
                 $newsQuery->orderByDesc('views');
                 break;
             case 'likes':
-                $newsQuery->orderByDesc('likes_count');
+                $newsQuery->orderByDesc('likers_count'); // Ensure using 'likers_count'
                 break;
             case 'comments':
                 $newsQuery->orderByDesc('comments_count');
@@ -185,7 +188,8 @@ class NewsController extends Controller
             'hotNews' => $hotNews,
             'allTags' => $allTags,
             'trendingNews' => $trendingNews,
-            'sortBy' => $sortBy // Pass sortBy to the view
+            'sortBy' => $sortBy, // Pass sortBy to the view
+            'page_title' => 'Tag: ' . $decodedTag . ' - ' . config('app.name', 'Laravel') // Add page title
         ]);
     }
 
@@ -271,8 +275,11 @@ class NewsController extends Controller
             ->limit(10)
             ->get();
 
+        $page_title = "Kết quả tìm kiếm cho '" . $query . "' - " . config('app.name', 'Laravel'); // Define page title
+
         // Return a new view for search results
         return view('client.search.results', compact(
+            'page_title', // Pass page title variable name
             'query',
             'newsItems',
             'hotNews',

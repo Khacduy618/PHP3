@@ -88,8 +88,10 @@ class HomeController extends Controller
             ->values() // Reset array keys
             ->all();
 
+        $page_title = 'Trang chủ - ' . config('app.name', 'Laravel');
 
         return view('client.home.home', compact(
+            'page_title', // Add page title
             'featuredNews',
             'trendingNews',
             'latestNews',

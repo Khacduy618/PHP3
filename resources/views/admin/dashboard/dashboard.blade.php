@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.server')
 @section('content')
     <!-- [ breadcrumb ] start -->
     <div class="page-header">
@@ -6,7 +6,7 @@
             <div class="row align-items-center">
                 <div class="col-md-12">
                     <div class="page-header-title">
-                        <h5 class="m-b-10"><a href="#">Dashboard</a></li>
+                        <h5 class="m-b-10"><a href="#">Bảng điều khiển</a></li>
                         </h5>
                     </div>
                 </div>
@@ -20,11 +20,11 @@
         <div class="col-md-6 col-xl-3">
             <div class="card">
                 <div class="card-body">
-                    <h6 class="mb-2 f-w-400 text-muted">Total Page Views</h6>
+                    <h6 class="mb-2 f-w-400 text-muted">Tổng lượt xem trang</h6>
                     <h4 class="mb-3">4,42,236 <span class="badge bg-light-primary border border-primary"><i
                                 class="ti ti-trending-up"></i> 59.3%</span></h4>
-                    <p class="mb-0 text-muted text-sm">You made an extra <span class="text-primary">35,000</span>
-                        this year
+                    <p class="mb-0 text-muted text-sm">Bạn đã kiếm thêm <span class="text-primary">35,000</span>
+                        trong năm nay
                     </p>
                 </div>
             </div>
@@ -32,33 +32,33 @@
         <div class="col-md-6 col-xl-3">
             <div class="card">
                 <div class="card-body">
-                    <h6 class="mb-2 f-w-400 text-muted">Total Users</h6>
+                    <h6 class="mb-2 f-w-400 text-muted">Tổng người dùng</h6>
                     <h4 class="mb-3">78,250 <span class="badge bg-light-success border border-success"><i
                                 class="ti ti-trending-up"></i> 70.5%</span></h4>
-                    <p class="mb-0 text-muted text-sm">You made an extra <span class="text-success">8,900</span>
-                        this year</p>
+                    <p class="mb-0 text-muted text-sm">Bạn đã kiếm thêm <span class="text-success">8,900</span>
+                        trong năm nay</p>
                 </div>
             </div>
         </div>
         <div class="col-md-6 col-xl-3">
             <div class="card">
                 <div class="card-body">
-                    <h6 class="mb-2 f-w-400 text-muted">Total Order</h6>
+                    <h6 class="mb-2 f-w-400 text-muted">Tổng đơn hàng</h6>
                     <h4 class="mb-3">18,800 <span class="badge bg-light-warning border border-warning"><i
                                 class="ti ti-trending-down"></i> 27.4%</span></h4>
-                    <p class="mb-0 text-muted text-sm">You made an extra <span class="text-warning">1,943</span>
-                        this year</p>
+                    <p class="mb-0 text-muted text-sm">Bạn đã kiếm thêm <span class="text-warning">1,943</span>
+                        trong năm nay</p>
                 </div>
             </div>
         </div>
         <div class="col-md-6 col-xl-3">
             <div class="card">
                 <div class="card-body">
-                    <h6 class="mb-2 f-w-400 text-muted">Total Sales</h6>
+                    <h6 class="mb-2 f-w-400 text-muted">Tổng doanh thu</h6>
                     <h4 class="mb-3">$35,078 <span class="badge bg-light-danger border border-danger"><i
                                 class="ti ti-trending-down"></i> 27.4%</span></h4>
-                    <p class="mb-0 text-muted text-sm">You made an extra <span class="text-danger">$20,395</span>
-                        this year
+                    <p class="mb-0 text-muted text-sm">Bạn đã kiếm thêm <span class="text-danger">$20,395</span>
+                        trong năm nay
                     </p>
                 </div>
             </div>
@@ -66,17 +66,17 @@
 
         <div class="col-md-12 col-xl-8">
             <div class="d-flex align-items-center justify-content-between mb-3">
-                <h5 class="mb-0">Unique Visitor</h5>
+                <h5 class="mb-0">Khách truy cập duy nhất</h5>
                 <ul class="nav nav-pills justify-content-end mb-0" id="chart-tab-tab" role="tablist">
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="chart-tab-home-tab" data-bs-toggle="pill"
                             data-bs-target="#chart-tab-home" type="button" role="tab" aria-controls="chart-tab-home"
-                            aria-selected="true">Month</button>
+                            aria-selected="true">Tháng</button>
                     </li>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link active" id="chart-tab-profile-tab" data-bs-toggle="pill"
                             data-bs-target="#chart-tab-profile" type="button" role="tab" aria-controls="chart-tab-profile"
-                            aria-selected="false">Week</button>
+                            aria-selected="false">Tuần</button>
                     </li>
                 </ul>
             </div>
@@ -96,10 +96,10 @@
             </div>
         </div>
         <div class="col-md-12 col-xl-4">
-            <h5 class="mb-3">Income Overview</h5>
+            <h5 class="mb-3">Tổng quan thu nhập</h5>
             <div class="card">
                 <div class="card-body">
-                    <h6 class="mb-2 f-w-400 text-muted">This Week Statistics</h6>
+                    <h6 class="mb-2 f-w-400 text-muted">Thống kê tuần này</h6>
                     <h3 class="mb-3">$7,650</h3>
                     <div id="income-overview-chart"></div>
                 </div>
@@ -107,18 +107,18 @@
         </div>
 
         <div class="col-md-12 col-xl-8">
-            <h5 class="mb-3">Recent Orders</h5>
+            <h5 class="mb-3">Đơn hàng gần đây</h5>
             <div class="card tbl-card">
                 <div class="card-body">
                     <div class="table-responsive">
                         <table class="table table-hover table-borderless mb-0">
                             <thead>
                                 <tr>
-                                    <th>TRACKING NO.</th>
-                                    <th>PRODUCT NAME</th>
-                                    <th>TOTAL ORDER</th>
-                                    <th>STATUS</th>
-                                    <th class="text-end">TOTAL AMOUNT</th>
+                                    <th>SỐ THEO DÕI</th>
+                                    <th>TÊN SẢN PHẨM</th>
+                                    <th>TỔNG ĐƠN HÀNG</th>
+                                    <th>TRẠNG THÁI</th>
+                                    <th class="text-end">TỔNG TIỀN</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -127,7 +127,7 @@
                                     <td>Camera Lens</td>
                                     <td>40</td>
                                     <td><span class="d-flex align-items-center gap-2"><i
-                                                class="fas fa-circle text-danger f-10 m-r-5"></i>Rejected</span>
+                                                class="fas fa-circle text-danger f-10 m-r-5"></i>Bị từ chối</span>
                                     </td>
                                     <td class="text-end">$40,570</td>
                                 </tr>
@@ -136,7 +136,7 @@
                                     <td>Laptop</td>
                                     <td>300</td>
                                     <td><span class="d-flex align-items-center gap-2"><i
-                                                class="fas fa-circle text-warning f-10 m-r-5"></i>Pending</span>
+                                                class="fas fa-circle text-warning f-10 m-r-5"></i>Đang chờ xử lý</span>
                                     </td>
                                     <td class="text-end">$180,139</td>
                                 </tr>
@@ -145,7 +145,7 @@
                                     <td>Mobile</td>
                                     <td>355</td>
                                     <td><span class="d-flex align-items-center gap-2"><i
-                                                class="fas fa-circle text-success f-10 m-r-5"></i>Approved</span>
+                                                class="fas fa-circle text-success f-10 m-r-5"></i>Đã duyệt</span>
                                     </td>
                                     <td class="text-end">$180,139</td>
                                 </tr>
@@ -154,7 +154,7 @@
                                     <td>Camera Lens</td>
                                     <td>40</td>
                                     <td><span class="d-flex align-items-center gap-2"><i
-                                                class="fas fa-circle text-danger f-10 m-r-5"></i>Rejected</span>
+                                                class="fas fa-circle text-danger f-10 m-r-5"></i>Bị từ chối</span>
                                     </td>
                                     <td class="text-end">$40,570</td>
                                 </tr>
@@ -163,7 +163,7 @@
                                     <td>Laptop</td>
                                     <td>300</td>
                                     <td><span class="d-flex align-items-center gap-2"><i
-                                                class="fas fa-circle text-warning f-10 m-r-5"></i>Pending</span>
+                                                class="fas fa-circle text-warning f-10 m-r-5"></i>Đang chờ xử lý</span>
                                     </td>
                                     <td class="text-end">$180,139</td>
                                 </tr>
@@ -172,7 +172,7 @@
                                     <td>Mobile</td>
                                     <td>355</td>
                                     <td><span class="d-flex align-items-center gap-2"><i
-                                                class="fas fa-circle text-success f-10 m-r-5"></i>Approved</span>
+                                                class="fas fa-circle text-success f-10 m-r-5"></i>Đã duyệt</span>
                                     </td>
                                     <td class="text-end">$180,139</td>
                                 </tr>
@@ -181,7 +181,7 @@
                                     <td>Camera Lens</td>
                                     <td>40</td>
                                     <td><span class="d-flex align-items-center gap-2"><i
-                                                class="fas fa-circle text-danger f-10 m-r-5"></i>Rejected</span>
+                                                class="fas fa-circle text-danger f-10 m-r-5"></i>Bị từ chối</span>
                                     </td>
                                     <td class="text-end">$40,570</td>
                                 </tr>
@@ -190,7 +190,7 @@
                                     <td>Laptop</td>
                                     <td>300</td>
                                     <td><span class="d-flex align-items-center gap-2"><i
-                                                class="fas fa-circle text-warning f-10 m-r-5"></i>Pending</span>
+                                                class="fas fa-circle text-warning f-10 m-r-5"></i>Đang chờ xử lý</span>
                                     </td>
                                     <td class="text-end">$180,139</td>
                                 </tr>
@@ -199,7 +199,7 @@
                                     <td>Mobile</td>
                                     <td>355</td>
                                     <td><span class="d-flex align-items-center gap-2"><i
-                                                class="fas fa-circle text-success f-10 m-r-5"></i>Approved</span>
+                                                class="fas fa-circle text-success f-10 m-r-5"></i>Đã duyệt</span>
                                     </td>
                                     <td class="text-end">$180,139</td>
                                 </tr>
@@ -208,7 +208,7 @@
                                     <td>Mobile</td>
                                     <td>355</td>
                                     <td><span class="d-flex align-items-center gap-2"><i
-                                                class="fas fa-circle text-success f-10 m-r-5"></i>Approved</span>
+                                                class="fas fa-circle text-success f-10 m-r-5"></i>Đã duyệt</span>
                                     </td>
                                     <td class="text-end">$180,139</td>
                                 </tr>
@@ -219,18 +219,18 @@
             </div>
         </div>
         <div class="col-md-12 col-xl-4">
-            <h5 class="mb-3">Analytics Report</h5>
+            <h5 class="mb-3">Báo cáo phân tích</h5>
             <div class="card">
                 <div class="list-group list-group-flush">
                     <a href="#"
-                        class="list-group-item list-group-item-action d-flex align-items-center justify-content-between">Company
-                        Finance Growth<span class="h5 mb-0">+45.14%</span></a>
+                        class="list-group-item list-group-item-action d-flex align-items-center justify-content-between">Tăng
+                        trưởng tài chính công ty<span class="h5 mb-0">+45.14%</span></a>
                     <a href="#"
-                        class="list-group-item list-group-item-action d-flex align-items-center justify-content-between">Company
-                        Expenses Ratio<span class="h5 mb-0">0.58%</span></a>
+                        class="list-group-item list-group-item-action d-flex align-items-center justify-content-between">Tỷ
+                        lệ chi phí công ty<span class="h5 mb-0">0.58%</span></a>
                     <a href="#"
-                        class="list-group-item list-group-item-action d-flex align-items-center justify-content-between">Business
-                        Risk Cases<span class="h5 mb-0">Low</span></a>
+                        class="list-group-item list-group-item-action d-flex align-items-center justify-content-between">Trường
+                        hợp rủi ro kinh doanh<span class="h5 mb-0">Thấp</span></a>
                 </div>
                 <div class="card-body px-2">
                     <div id="analytics-report-chart"></div>
@@ -239,17 +239,17 @@
         </div>
 
         <div class="col-md-12 col-xl-8">
-            <h5 class="mb-3">Sales Report</h5>
+            <h5 class="mb-3">Báo cáo bán hàng</h5>
             <div class="card">
                 <div class="card-body">
-                    <h6 class="mb-2 f-w-400 text-muted">This Week Statistics</h6>
+                    <h6 class="mb-2 f-w-400 text-muted">Thống kê tuần này</h6>
                     <h3 class="mb-0">$7,650</h3>
                     <div id="sales-report-chart"></div>
                 </div>
             </div>
         </div>
         <div class="col-md-12 col-xl-4">
-            <h5 class="mb-3">Transaction History</h5>
+            <h5 class="mb-3">Lịch sử giao dịch</h5>
             <div class="card">
                 <div class="list-group list-group-flush">
                     <a href="#" class="list-group-item list-group-item-action">
@@ -261,7 +261,7 @@
                             </div>
                             <div class="flex-grow-1 ms-3">
                                 <h6 class="mb-1">Order #002434</h6>
-                                <p class="mb-0 text-muted">Today, 2:00 AM</P>
+                                <p class="mb-0 text-muted">Hôm nay, 2:00 AM</P>
                             </div>
                             <div class="flex-shrink-0 text-end">
                                 <h6 class="mb-1">+ $1,430</h6>

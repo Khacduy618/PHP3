@@ -16,7 +16,8 @@ class AuthenticatedSessionController extends Controller
      */
     public function create(): View
     {
-        return view('auth.login');
+        $page_title = 'Đăng nhập';
+        return view('auth.login', compact('page_title'));
     }
 
     /**
@@ -28,6 +29,14 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        // Check user role and redirect accordingly
+        $user = $request->user(); // Or Auth::user()
+        if ($user->role === 'admin') { // Assuming 'admin' is the role value
+            // Redirect admin to admin dashboard
+            return redirect()->intended(route('admin.dashboard', absolute: false));
+        }
+
+        // Redirect other users to the homepage (or their intended destination)
         return redirect()->intended(route('home', absolute: false));
     }
 

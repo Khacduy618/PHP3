@@ -7,6 +7,7 @@ use App\Http\Controllers\Client\NewsController;
 use App\Http\Controllers\Client\CommentController; // Import CommentController
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\AdminCategoryController;
+use App\Http\Controllers\Admin\AdminUserController; // Import AdminUserController
 use Illuminate\Support\Facades\Route;
 
 // Updated home route to use HomeController
@@ -68,12 +69,15 @@ Route::middleware(['auth', 'admin'])->group(function () {
     // Route for CKEditor image uploads
     Route::post('/admin/ckeditor/upload', [AdminNewsController::class, 'ckeditorUpload'])->name('admin.ckeditor.upload');
 
-});
-
-Route::middleware('auth')->group(function () {
+    //profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // User Management Routes
+    Route::resource('/admin/users', AdminUserController::class)->names('admin.users');
+
 });
+
 
 require __DIR__ . '/auth.php';

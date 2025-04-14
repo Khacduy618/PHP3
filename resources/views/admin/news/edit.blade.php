@@ -79,7 +79,7 @@
 
              {{-- Tags --}}
             <div class="mb-3">
-                <label for="tags" class="form-label">Tags (cách nhau bởi dấu phẩy)</label>
+                <label for="tags" class="form-label">Thẻ (cách nhau bởi dấu phẩy)</label>
                 {{-- Decode JSON tags string back to comma-separated for input value --}}
                 @php
                     $tagsValue = '';
