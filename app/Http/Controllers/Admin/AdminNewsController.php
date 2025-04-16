@@ -6,23 +6,78 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\News;
 use App\Models\Category;
+use Illuminate\Support\Facades\Storage; // Import Storage facade
+
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;        // Import Str facade
 use Illuminate\Support\Facades\Auth; // Import Auth facade
+use Illuminate\Validation\Rule;
 
 class AdminNewsController extends Controller
 {
-    public function index()
+    public function index(Request $request) // Inject Request
     {
         $page_title = "NEWS - Danh sách tin tức";
         $title = "Danh sách tin tức";
-        $news = DB::table('news')
-            ->join('users', 'news.user_id', '=', 'users.id')
-            ->join('categories', 'news.category_id', '=', 'categories.id')
-            ->select('news.*', 'users.name as author', 'categories.name as category_name')->orderBy('created_at', 'desc')
+
+        // Get sorting parameters from request, set defaults
+        $sortBy = $request->query('sort_by', 'created_at'); // Default sort by creation date
+        $sortDir = $request->query('sort_dir', 'desc'); // Default sort direction
+
+        // Validate sortable columns
+        $sortableColumns = ['id', 'title', 'created_at'];
+        if (!in_array($sortBy, $sortableColumns)) {
+            $sortBy = 'created_at'; // Fallback to default if invalid column provided
+        }
+        if (!in_array($sortDir, ['asc', 'desc'])) {
+            $sortDir = 'desc'; // Fallback to default direction
+        }
+
+        // Fetch categories for the filter dropdown (active ones, with children)
+        $categoriesForFilter = Category::where('status', 'Hiện')
+            ->whereNull('parent_id') // Get top-level categories
+            ->with('children') // Eager load children
+            ->orderBy('name', 'asc')
             ->get();
 
-        return view('admin.news.list', compact('news', 'title', 'page_title'));
+        // Build the query
+        $newsQuery = News::with(['user', 'category']) // Eager load relationships
+            ->withTrashed(); // Include soft-deleted news
+
+        // Apply search filter if present
+        if ($request->has('search') && $request->search != '') {
+            $searchTerm = $request->search;
+            $newsQuery->where(function ($query) use ($searchTerm) {
+                $query->where('title', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('summary', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('content', 'like', '%' . $searchTerm . '%');
+            });
+        }
+
+        // Apply category filter if present
+        if ($request->has('category_id') && $request->category_id != '') {
+            $categoryId = $request->category_id;
+            // If you want to include news from child categories when a parent is selected,
+            // you might need more complex logic here to get all child IDs.
+            // For now, it filters by the exact category ID selected.
+            $newsQuery->where('category_id', $categoryId);
+        }
+
+        // Apply sorting
+        // Always sort by deleted_at status first to keep active items on top when sorting other columns
+        $newsQuery->orderByRaw('deleted_at IS NULL DESC');
+
+        // Apply user-requested sorting
+        $newsQuery->orderBy($sortBy, $sortDir);
+
+        // Paginate results
+        $news = $newsQuery->paginate(10)->appends($request->query()); // Append query string to pagination links
+
+        // Note: The view 'admin.news.list' will need to be adjusted
+        // to access related data via Eloquent relationships (e.g., $item->user->name, $item->category->name)
+        // instead of the joined aliases (author, category_name).
+
+        return view('admin.news.list', compact('news', 'title', 'page_title', 'sortBy', 'sortDir', 'categoriesForFilter')); // Pass categories and sorting params
     }
 
     /**
@@ -42,10 +97,10 @@ class AdminNewsController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'title' => 'required|string|max:255',
+            'title' => 'required|string|max:255|unique:news.title',
             'category_id' => 'required|exists:categories,id',
             'content' => 'required|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'status' => 'required|in:draft,published',
         ]);
 
@@ -87,33 +142,7 @@ class AdminNewsController extends Controller
         return view('client.details', compact('news', 'page_title'));
     }
 
-    /**
-     * Display news by category.
-     */
-    public function showByCategory(string $slug)
-    {
-        $category = DB::table('categories')->where('slug', $slug)->first();
-        $id = $category->id;
 
-        $news = DB::table('news')
-            ->join('users', 'news.user_id', '=', 'users.id')
-            ->join('categories', 'news.category_id', '=', 'categories.id')
-            ->select('news.*', 'users.name as author', 'categories.name as category_name')
-            ->where('news.status', 'published')
-            ->whereIn('news.category_id', function ($query) use ($id) {
-                $query->select('id')
-                    ->from('categories')
-                    ->where('parent_id', $id);
-            })
-            ->get();
-
-        $page_title = 'NEWS - ' . $category->name;
-
-        return view('client.news_byCategory', compact('news', 'page_title', 'category'));
-    }
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(string $slug)
     {
         $page_title = 'NEWS - Chỉnh sửa tin tức';
@@ -130,11 +159,20 @@ class AdminNewsController extends Controller
      */
     public function update(Request $request, string $slug)
     {
-        $id = DB::table('news')->where('slug', $slug)->value('id');
-        $newsItem = News::find($id);
+        // Find news item, including soft-deleted ones for restore
+        $newsItem = News::withTrashed()->where('slug', $slug)->firstOrFail(); // Re-add withTrashed()
 
+        // Handle Restore Action first
+        if ($request->has('restore')) {
+            $newsItem->status = 'draft';
+            $newsItem->save();
+            $newsItem->restore();
+            return redirect()->route('admin.news.list')->with('success', 'Tin tức đã được khôi phục thành công!');
+        }
+
+        // Proceed with regular update validation and logic
         $request->validate([
-            'title' => 'required|string|max:255',
+            'title' => 'required|string|max:255|unique:news,title',
             'category_id' => 'required|exists:categories,id',
             'content' => 'required|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Image is optional on update
@@ -144,10 +182,23 @@ class AdminNewsController extends Controller
             'is_hot' => 'nullable|boolean',
             'is_featured' => 'nullable|boolean',
             'is_trending' => 'nullable|boolean',
+            // Slug validation will be added dynamically below
         ]);
 
-        // Get the specific fields we want to update directly from the request
-        $data = $request->only(['title', 'category_id', 'content', 'status']);
+        // Prepare data for update
+        $data = $request->only(['title', 'category_id', 'content', 'status', 'summary']); // Include summary if provided
+
+        // --- Slug Handling ---
+        $newSlug = $newsItem->slug; // Default to existing slug
+        if ($request->title !== $newsItem->title) {
+            $newSlug = Str::slug($request->title); // Generate potential new slug
+        }
+
+
+        // If validation passed, add the slug to the data array
+        $data['slug'] = $newSlug;
+        // --- End Slug Handling ---
+
 
         // Convert tags string to array, then encode as JSON with unescaped unicode
         $data['tags'] = $request->filled('tags') ? json_encode(array_map('trim', explode(',', $request->tags)), JSON_UNESCAPED_UNICODE) : null;
@@ -155,22 +206,18 @@ class AdminNewsController extends Controller
         // Handle image upload
         if ($request->hasFile('image')) {
             // Delete old image if it exists
-            if ($newsItem->image && \Illuminate\Support\Facades\Storage::disk('public')->exists($newsItem->image)) {
-                \Illuminate\Support\Facades\Storage::disk('public')->delete($newsItem->image);
+            if ($newsItem->image && Storage::disk('public')->exists($newsItem->image)) {
+                Storage::disk('public')->delete($newsItem->image);
             }
             // Store new image
             $data['image'] = $request->file('image')->store('news_images', 'public');
         }
 
-        // Regenerate slug if title changed
-        if ($request->title !== $newsItem->title) {
-            $data['slug'] = Str::slug($request->title);
+        // Regenerate summary only if content changed AND summary was NOT provided
+        if (!$request->filled('summary') && $request->content !== $newsItem->content) {
+            $data['summary'] = Str::limit(strip_tags($request->content), 150);
         }
-
-        // Regenerate summary if content changed OR if summary was provided
-        if ($request->filled('summary') || $request->content !== $newsItem->content) {
-            $data['summary'] = $request->filled('summary') ? $request->summary : Str::limit(strip_tags($request->content), 150);
-        }
+        // If summary was provided in the request, it's already in $data
 
         // Handle boolean flags (use boolean helper for checkboxes) - Ensure they are always present
         $data['is_hot'] = $request->boolean('is_hot');
@@ -181,15 +228,23 @@ class AdminNewsController extends Controller
         $newsItem->update($data);
 
         // Redirect back to the edit form or list view
-        return redirect()->route('admin.news.edit', $newsItem->slug)->with('success', 'Tin tức đã được cập nhật thành công!');
+        return redirect()->route('admin.news.list', $newsItem->slug)->with('success', 'Tin tức đã được cập nhật thành công!');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+
+    public function destroy(string $slug) // Use slug for consistency
     {
-        //
+        // Find the news item by slug
+        $newsItem = News::where('slug', $slug)->firstOrFail();
+
+        // Set status to 'archived' before soft deleting
+        $newsItem->status = 'archived'; // Assuming 'archived' is a valid status
+        $newsItem->save();
+
+        // Soft delete the news item
+        $newsItem->delete(); // This performs a soft delete because of the trait
+
+        return redirect()->route('admin.news.list')->with('success', 'Tin tức đã được chuyển vào thùng rác.');
     }
 
     /**

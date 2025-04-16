@@ -28,6 +28,10 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
 
         $request->session()->regenerate();
+        // $request_form->validate([
+        //     'email' => ['required', 'email'],
+        //     'password' => ['required'],
+        // ]);
 
         // Check user role and redirect accordingly
         $user = $request->user(); // Or Auth::user()

@@ -3,27 +3,102 @@
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h2>{{ $title }}</h2>
+        <div class=" d-flex align-items-center ms-auto"> {{-- Added card-title and padding --}}
+            {{-- Mobile Search Dropdown --}}
+            <div class="dropdown pc-h-item d-inline-flex d-md-none">
+                <a class="pc-head-link dropdown-toggle arrow-none me-2" style="color:black;width:fit-content;"
+                    data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
+                    <i class="ti ti-search" style="font-size:20px;"></i>
+                </a>
+                <div class="dropdown-menu pc-h-dropdown drp-search">
+                    <form action="{{ route('admin.users.index') }}" method="GET" class="px-3 py-2">
+                        <div class="input-group">
+                            <span class="input-group-text"><i data-feather="search" class="icon-search"></i></span>
+                            <input type="search" name="search" class="form-control" placeholder="Tìm kiếm..."
+                                value="{{ request('search') }}">
+                            @if(request('sort_by'))
+                                <input type="hidden" name="sort_by" value="{{ request('sort_by') }}">
+                            @endif
+                            @if(request('sort_dir'))
+                                <input type="hidden" name="sort_dir" value="{{ request('sort_dir') }}">
+                            @endif
+                        </div>
+                    </form>
+                </div>
+            </div>
+            {{-- Desktop Search Input Group --}}
+            <div class="pc-h-item d-none d-md-inline-flex ms-auto p-2">
+                <form action="{{ route('admin.users.index') }}" method="GET">
+                    <div class="input-group">
+                        <span class="input-group-text"><i data-feather="search" class="icon-search"></i></span>
+                        <input type="search" name="search" class="form-control" placeholder="Tìm kiếm tên, email..."
+                            value="{{ request('search') }}">
+                        @if(request('sort_by'))
+                            <input type="hidden" name="sort_by" value="{{ request('sort_by') }}">
+                        @endif
+                        @if(request('sort_dir'))
+                            <input type="hidden" name="sort_dir" value="{{ request('sort_dir') }}">
+                        @endif
+                        {{-- Optional: Add a submit button if Enter key isn't sufficient --}}
+                        {{-- <button type="submit" class="btn btn-primary ms-2">Tìm</button> --}}
+                    </div>
+                </form>
+            </div>
+        </div>
+        {{-- Keep the Add User button separate for now, or integrate into card-title if preferred --}}
         <a href="{{ route('admin.users.create') }}" class="btn btn-success">Thêm Người dùng</a>
     </div>
+
     <div class="card">
+
         <div class="card-body">
             <table class="table table-hover align-middle">
                 <thead class="table-light">
                     <tr>
-                        <th>#</th>
+                        <th>
+                            @php $sortIcon = $sortBy == 'id' ? ($sortDir == 'asc' ? 'ti-arrow-up' : 'ti-arrow-down') : 'ti-arrows-sort'; @endphp
+                            <a
+                                href="{{ route('admin.users.index', ['sort_by' => 'id', 'sort_dir' => $sortBy == 'id' && $sortDir == 'asc' ? 'desc' : 'asc']) }}">
+                                Mã người dùng <i class="ti {{ $sortIcon }}"></i>
+                            </a>
+                        </th>
                         <th>Ảnh đại diện</th>
-                        <th>Tên</th>
-                        <th>Email</th>
-                        <th>Vai trò</th>
+                        <th>
+                            @php $sortIcon = $sortBy == 'name' ? ($sortDir == 'asc' ? 'ti-arrow-up' : 'ti-arrow-down') : 'ti-arrows-sort'; @endphp
+                            <a
+                                href="{{ route('admin.users.index', ['sort_by' => 'name', 'sort_dir' => $sortBy == 'name' && $sortDir == 'asc' ? 'desc' : 'asc']) }}">
+                                Tên <i class="ti {{ $sortIcon }}"></i>
+                            </a>
+                        </th>
+                        <th>
+                            @php $sortIcon = $sortBy == 'email' ? ($sortDir == 'asc' ? 'ti-arrow-up' : 'ti-arrow-down') : 'ti-arrows-sort'; @endphp
+                            <a
+                                href="{{ route('admin.users.index', ['sort_by' => 'email', 'sort_dir' => $sortBy == 'email' && $sortDir == 'asc' ? 'desc' : 'asc']) }}">
+                                Email <i class="ti {{ $sortIcon }}"></i>
+                            </a>
+                        </th>
+                        <th>
+                            @php $sortIcon = $sortBy == 'role' ? ($sortDir == 'asc' ? 'ti-arrow-up' : 'ti-arrow-down') : 'ti-arrows-sort'; @endphp
+                            <a
+                                href="{{ route('admin.users.index', ['sort_by' => 'role', 'sort_dir' => $sortBy == 'role' && $sortDir == 'asc' ? 'desc' : 'asc']) }}">
+                                Vai trò <i class="ti {{ $sortIcon }}"></i>
+                            </a>
+                        </th>
                         <th>Trạng thái</th> {{-- Add Status Column --}}
-                        <th>Ngày tạo</th>
+                        <th>
+                            @php $sortIcon = $sortBy == 'created_at' ? ($sortDir == 'asc' ? 'ti-arrow-up' : 'ti-arrow-down') : 'ti-arrows-sort'; @endphp
+                            <a
+                                href="{{ route('admin.users.index', ['sort_by' => 'created_at', 'sort_dir' => $sortBy == 'created_at' && $sortDir == 'asc' ? 'desc' : 'asc']) }}">
+                                Ngày tạo <i class="ti {{ $sortIcon }}"></i>
+                            </a>
+                        </th>
                         <th class="text-center">Hành động</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($users as $user)
                         <tr>
-                            <td>{{ $loop->iteration }}</td>
+                            <td class="text-center">{{  $user->id }}</td>
                             <td>
                                 <img src="{{ $user->avatar ? Storage::url($user->avatar) : asset('admin/assets/images/user/avatar-2.jpg') }}"
                                     alt="Avatar" class="user-avtar" style="width: 40px; height: 40px; border-radius: 50%;"
@@ -100,7 +175,10 @@
                     @endforelse
                 </tbody>
             </table>
-
+            {{-- Re-add pagination links --}}
+            <div class="d-flex justify-content-center mt-4">
+                {{ $users->links() }}
+            </div>
         </div>
     </div>
 @endsection

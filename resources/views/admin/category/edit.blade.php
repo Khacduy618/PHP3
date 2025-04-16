@@ -3,14 +3,9 @@
 @section('content')
 
     <div class="container mt-4">
-        <div class="row">
-            <div class="title col-md-10">
-                <h2>{{ $title }}</h2>
-            </div>
-
-            <div class="col-md-2 d-flex justify-content-end ms-auto">
-                <a href="{{ route('admin.category.list') }}" class="btn btn-secondary">Quay lại danh sách</a>
-            </div>
+        <div class="d-flex">
+            <h2>{{ $title }}</h2>
+            <button type="button" class="btn btn-secondary ms-auto" onclick="window.history.back();">Quay Lại</button>
         </div>
 
         <form action="{{ route('admin.category.update', ['slug' => $category->slug]) }}" method="POST">

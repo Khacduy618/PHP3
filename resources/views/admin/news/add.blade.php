@@ -3,14 +3,17 @@
 @section('content')
 
     <div class="container mt-4">
-        <h2>{{ $title }}</h2>
+        <div class="d-flex">
+            <h2>{{ $title }}</h2>
+            <button type="button" class="btn btn-secondary ms-auto" onclick="window.history.back();">Quay Lại</button>
+        </div>
         <form action="{{ route('admin.news.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
             {{-- Title --}}
             <div class="mb-3">
                 <label for="title" class="form-label">Tiêu đề</label>
                 <input type="text" class="form-control @error('title') is-invalid @enderror" id="title" name="title"
-                    placeholder="Nhập tiêu đề" value="{{ old('title') }}" required>
+                    placeholder="Nhập tiêu đề" value="{{ old('title') }}">
                 @error('title')
                     <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
@@ -19,8 +22,7 @@
             {{-- Category --}}
             <div class="mb-3">
                 <label for="category_id" class="form-label">Danh mục</label>
-                <select class="form-select @error('category_id') is-invalid @enderror" id="category_id" name="category_id"
-                    required>
+                <select class="form-select @error('category_id') is-invalid @enderror" id="category_id" name="category_id">
                     <option value="" disabled selected>Chọn danh mục con</option>
                     @if (isset($menuCategories))
                         @foreach ($menuCategories as $parentCategory)
@@ -55,7 +57,7 @@
             {{-- Content with ID for Rich Text Editor --}}
             <div class="mb-3">
                 <label for="content_editor" class="form-label">Nội dung</label>
-                {{-- Removed 'required' attribute as CKEditor hides the original textarea --}}
+                {{-- Removed '' attribute as CKEditor hides the original textarea --}}
                 <textarea class="form-control @error('content') is-invalid @enderror" id="content_editor" name="content"
                     rows="10" placeholder="Nhập nội dung">{{ old('content') }}</textarea>
                 @error('content')
@@ -110,7 +112,7 @@
             {{-- Status --}}
             <div class="mb-3">
                 <label for="status" class="form-label">Trạng thái</label>
-                <select class="form-select @error('status') is-invalid @enderror" id="status" name="status" required>
+                <select class="form-select @error('status') is-invalid @enderror" id="status" name="status">
                     <option value="draft" {{ old('status') == 'draft' ? 'selected' : '' }}>Nháp</option>
                     <option value="published" {{ old('status') == 'published' ? 'selected' : '' }}>Xuất bản</option>
                 </select>

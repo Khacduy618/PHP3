@@ -3,7 +3,7 @@
 @section('content')
     <div class="container px-5 my-5"> {{-- Added margin top/bottom --}}
         <div class="row">
-            <div class="col-6 p-0" style="width:fit-content">
+            <div class="col-6 p-0" style="width:fit-content;">
                 <img src="{{ asset('site/images/venom-login.jpg') }}" class="rounded-start shadow" alt="aaaa"
                     style="width:550px; height:560px">
             </div>
@@ -25,9 +25,9 @@
                             <!-- Email Address -->
                             <div class="form-group mb-3">
                                 <input id="email" class="form-control form-control-lg @error('email') is-invalid @enderror"
-                                    type="email" name="email" value="{{ old('email') }}" required autofocus
-                                    autocomplete="username" placeholder="Email"
-                                    style="border-radius: 25px; background-color: #f8f9fa;" /> {{-- Rounded, light bg --}}
+                                    type="text" name="email" value="{{ old('email') }}" autofocus autocomplete="username"
+                                    placeholder="Email" style="border-radius: 25px; background-color: #f8f9fa;" /> {{--
+                                Rounded, light bg --}}
                                 @error('email')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -39,8 +39,8 @@
                             <div class="form-group mb-3 position-relative"> {{-- Added position-relative --}}
                                 <input id="password"
                                     class="form-control form-control-lg @error('password') is-invalid @enderror"
-                                    type="password" name="password" required autocomplete="current-password"
-                                    placeholder="Mật khẩu" style="border-radius: 25px; background-color: #f8f9fa;" /> {{--
+                                    type="password" name="password" autocomplete="current-password" placeholder="Mật khẩu"
+                                    style="border-radius: 25px; background-color: #f8f9fa;" /> {{--
                                 Rounded, light bg --}}
                                 {{-- Simple text toggle, replace with icon if FontAwesome is available --}}
                                 {{-- <span class="password-toggle"

@@ -30,8 +30,8 @@
                                 <label for="password" class="form-label visually-hidden">{{ __('Mật khẩu') }}</label>
                                 <input id="password"
                                     class="form-control form-control-lg @error('password') is-invalid @enderror"
-                                    type="password" name="password" required autocomplete="current-password"
-                                    placeholder="Mật khẩu" style="border-radius: 25px; background-color: #f8f9fa;" />
+                                    type="password" name="password" autocomplete="current-password" placeholder="Mật khẩu"
+                                    style="border-radius: 25px; background-color: #f8f9fa;" />
                                 @error('password')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>

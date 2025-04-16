@@ -8,18 +8,49 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth; // Import Auth facade
 use Illuminate\Support\Str;        // Import Str facade (for slug generation)
+use Illuminate\Validation\Rule; // Import Rule
 
 class AdminCategoryController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+
+    public function index(Request $request) // Inject Request
     {
         $page_title = "NEWS - Danh sách loại tin";
         $title = "Danh sách loại tin";
-        $categories = Category::all();
-        return view("admin.category.list", compact("page_title", "title", "categories"));
+
+        // Get sorting parameters from request, set defaults
+        $sortBy = $request->query('sort_by', 'created_at'); // Default sort by creation date
+        $sortDir = $request->query('sort_dir', 'asc'); // Default sort direction
+
+        // Validate sortable columns
+        $sortableColumns = ['id', 'name', 'created_at'];
+        if (!in_array($sortBy, $sortableColumns)) {
+            $sortBy = 'created_at'; // Fallback to default
+        }
+        if (!in_array($sortDir, ['asc', 'desc'])) {
+            $sortDir = 'desc'; // Fallback to default
+        }
+
+        // Build the query
+        $categoryQuery = Category::withTrashed(); // Include soft-deleted
+
+        // Apply search filter if present
+        if ($request->has('search') && $request->search != '') {
+            $searchTerm = $request->search;
+            $categoryQuery->where(function ($query) use ($searchTerm) {
+                $query->where('name', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('description', 'like', '%' . $searchTerm . '%');
+            });
+        }
+
+        // Apply sorting
+        $categoryQuery->orderByRaw('deleted_at IS NULL DESC'); // Keep active/deleted sorting first
+        $categoryQuery->orderBy($sortBy, $sortDir); // Apply user sorting
+
+        // Paginate results
+        $categories = $categoryQuery->paginate(10)->appends($request->query()); // Append query string
+
+        return view("admin.category.list", compact("page_title", "title", "categories", 'sortBy', 'sortDir')); // Pass sorting params
 
     }
 
@@ -39,18 +70,14 @@ class AdminCategoryController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|max:255',
-            'slug' => 'required|max:255',
+            'name' => 'required|max:255|unique:categories,name', // Added unique rule
+            'slug' => 'max:255',
             'description' => 'required',
             'parent_id' => 'nullable|exists:categories,id',
-
+            'status' => 'required|in:Hiện,Ẩn', // Added status validation
         ]);
 
-
-        // Kiểm tra xem tên đã tồn tại chưa
-        if (Category::where('name', $request->name)->exists()) {
-            return redirect()->back()->with('error', 'Tên danh mục đã tồn tại');
-        }
+        // The unique rule handles the name check, so the manual check below is removed.
 
         // Kiểm tra xem slug đã tồn tại chưa;
         // Auto-generate slug if not provided or ensure uniqueness
@@ -74,16 +101,19 @@ class AdminCategoryController extends Controller
         return redirect()->route('admin.category.list')->with('success', 'Thêm loại tin thành công');
     }
 
+    /**
+     * Return all categories as JSON for API requests.
+     */
+    public function apiIndex()
+    {
+        $categories = Category::withTrashed()->get(); // Fetch all categories, including soft-deleted
+        return response()->json($categories);
+    }
+
     public function hide(Request $request, string $slug)
     {
-        $id = DB::table('categories')->where('slug', $slug)->value('id');
-        $category = Category::find($id);
-
-        if (!$category) {
-            return redirect()->route('admin.category.list')->with('error', 'Danh mục không tồn tại');
-        }
-
-        $category->status = $request->status;
+        $category = Category::where('slug', $slug)->firstOrFail(); // Use Eloquent
+        $category->status = 'Ẩn'; // Directly set status
         $category->save();
 
         return redirect()->route('admin.category.list')->with('success', 'Ẩn loại tin thành công');
@@ -93,14 +123,8 @@ class AdminCategoryController extends Controller
      */
     public function show(Request $request, string $slug)
     {
-        $id = DB::table('categories')->where('slug', $slug)->value('id');
-        $category = Category::find($id);
-
-        if (!$category) {
-            return redirect()->route('admin.category.list')->with('error', 'Danh mục không tồn tại');
-        }
-
-        $category->status = $request->status;
+        $category = Category::where('slug', $slug)->firstOrFail(); // Use Eloquent
+        $category->status = 'Hiện'; // Directly set status
         $category->save();
 
         return redirect()->route('admin.category.list')->with('success', 'Hiển thị loại tin thành công');
@@ -111,20 +135,15 @@ class AdminCategoryController extends Controller
      */
     public function edit(string $slug)
     {
-
-        // Lấy id
-        $id = DB::table('categories')->where('slug', $slug)->value('id');
         // Tìm danh mục theo slug
-        $category = Category::find($id);
+        $category = Category::where('slug', $slug)->firstOrFail(); // Use Eloquent
 
-        // Kiểm tra xem danh mục có tồn tại không
-        if (!$category) {
-            return redirect()->route('admin.category.list')->with('error', 'Danh mục không tồn tại');
-        }
-        // dd($category);
         $page_title = "NEWS - Sửa loại tin";
         $title = "Sửa loại tin";
-        return view("admin.category.edit", compact("page_title", "title", "category"));
+        // Fetch parent categories for the dropdown (excluding the current one)
+        $menuCategories = Category::whereNull('parent_id')->where('id', '!=', $category->id)->get();
+
+        return view("admin.category.edit", compact("page_title", "title", "category", "menuCategories"));
     }
 
     /**
@@ -132,57 +151,69 @@ class AdminCategoryController extends Controller
      */
     public function update(Request $request, string $slug)
     {
+        // Find category, including soft-deleted ones for restore
+        $category = Category::withTrashed()->where('slug', $slug)->firstOrFail(); // Re-add withTrashed()
+
+        // Handle Restore Action first
+        if ($request->has('restore')) {
+            $category->restore();
+            return redirect()->route('admin.category.list')->with('success', 'Danh mục đã được khôi phục thành công!');
+        }
+
+        // Proceed with regular update validation and logic
         $request->validate([
             'name' => 'required|max:255',
-            'slug' => 'required|max:255',
+            'slug' => ['required', 'max:255', Rule::unique('categories')->ignore($category->id)], // Use Rule for uniqueness check
             'description' => 'required',
             'parent_id' => 'nullable|exists:categories,id',
+            'status' => 'required|in:Hiện,Ẩn',
         ]);
-        $id = DB::table('categories')->where('slug', $slug)->value('id');
-        // Kiểm tra xem danh mục có tồn tại không
-        $category = Category::find($id);
-        if (!$category) {
-            return redirect()->route('admin.category.list')->with('error', 'Danh mục không tồn tại');
-        }
-
-        // Kiểm tra xem tên đã tồn tại chưa (ngoại trừ danh mục hiện tại)
-        if (Category::where('name', $request->name)->where('id', '!=', $id)->exists()) {
-            return redirect()->back()->with('error', 'Tên danh mục đã tồn tại');
-        }
-
-        // Kiểm tra xem slug đã tồn tại chưa (ngoại trừ danh mục hiện tại)
-        if (Category::where('slug', $request->slug)->where('id', '!=', $id)->exists()) {
-            return redirect()->back()->with('error', 'Slug đã tồn tại');
-        }
 
         // Prepare data for update
         $data = $request->only(['name', 'description', 'parent_id', 'status']);
 
         // Regenerate slug only if name changed
         if ($request->name !== $category->name) {
-            $slug = Str::slug($request->name);
-            $originalSlug = $slug;
+            $newSlug = Str::slug($request->name);
+            $originalSlug = $newSlug;
             $count = 1;
             // Ensure uniqueness, excluding the current category ID
-            while (Category::where('slug', $slug)->where('id', '!=', $id)->exists()) {
-                $slug = $originalSlug . '-' . $count++;
+            while (Category::where('slug', $newSlug)->where('id', '!=', $category->id)->exists()) {
+                $newSlug = $originalSlug . '-' . $count++;
             }
-            $data['slug'] = $slug;
-        } else {
-            // Ensure the submitted slug is unique if it wasn't auto-generated from name
-            if ($request->slug !== $category->slug && Category::where('slug', $request->slug)->where('id', '!=', $id)->exists()) {
-                return redirect()->back()->with('error', 'Slug đã tồn tại');
-            }
-            // Only update slug if it was provided and different (and unique check passed)
-            if ($request->filled('slug') && $request->slug !== $category->slug) {
-                $data['slug'] = $request->slug;
-            }
+            $data['slug'] = $newSlug;
+        } elseif ($request->slug !== $category->slug) {
+            // If name didn't change, but slug did, use the provided slug (validation already checked uniqueness)
+            $data['slug'] = $request->slug;
         }
+        // If neither name nor slug changed, slug remains the same
 
 
         // Update using mass assignment
         $category->update($data);
 
         return redirect()->route('admin.category.list')->with('success', 'Cập nhật loại tin thành công');
+    }
+
+    /**
+     * Remove the specified resource from storage (permanent delete).
+     */
+    public function destroy(string $slug)
+    {
+        // Find the category by slug
+        $category = Category::where('slug', $slug)->firstOrFail();
+
+        // TODO: Add logic here to handle child categories or related news if necessary
+        // For example, prevent deletion if it has children, or reassign news items.
+        // For now, we'll just soft delete the category.
+
+        // Set status to 'Hidden' before soft deleting
+        $category->status = 'Ẩn';
+        $category->save();
+
+        // Soft delete the category
+        $category->delete(); // This performs a soft delete because of the trait
+
+        return redirect()->route('admin.category.list')->with('success', 'Danh mục đã được chuyển vào thùng rác.');
     }
 }

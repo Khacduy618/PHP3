@@ -31,7 +31,7 @@
 
                             <div class="form-group mb-3">
                                 <input id="name" class="form-control form-control-lg @error('name') is-invalid @enderror"
-                                    type="text" name="name" value="{{ old('name') }}" required placeholder="Nhập họ và tên"
+                                    type="text" name="name" value="{{ old('name') }}" placeholder="Nhập họ và tên"
                                     style="border-radius: 10px; background-color: #f8f9fa;" /> {{--
                                 Rounded, light bg --}}
                                 @error('name')
@@ -44,7 +44,7 @@
                             <!-- Email Address -->
                             <div class="form-group mb-3">
                                 <input id="email" class="form-control form-control-lg @error('email') is-invalid @enderror"
-                                    type="email" name="email" value="{{ old('email') }}" required autocomplete="username"
+                                    type="text" name="email" value="{{ old('email') }}" autocomplete="username"
                                     placeholder="Email" style="border-radius: 10px; background-color: #f8f9fa;" /> {{--
                                 Rounded, light bg --}}
                                 @error('email')
@@ -58,7 +58,7 @@
                             <div class="form-group mb-3 position-relative"> {{-- Added position-relative --}}
                                 <input id="password"
                                     class="form-control form-control-lg @error('password') is-invalid @enderror"
-                                    type="password" name="password" required autocomplete="new-password"
+                                    type="password" name="password" autocomplete="new-password"
                                     placeholder="Nhập mật khẩu của bạn"
                                     style="border-radius: 10px; background-color: #f8f9fa;" /> {{-- Rounded, light bg --}}
                                 {{-- Simple text toggle, replace with icon if FontAwesome is available --}}
@@ -76,15 +76,14 @@
                             {{-- Add confirm password if your backend requires it --}}
                             <div class="form-group mb-3 position-relative">
                                 <input id="password_confirmation" class="form-control form-control-lg" type="password"
-                                    name="password_confirmation" required autocomplete="new-password"
-                                    placeholder="Xác nhận mật khẩu"
+                                    name="password_confirmation" autocomplete="new-password" placeholder="Xác nhận mật khẩu"
                                     style="border-radius: 10px; background-color: #f8f9fa;" />
                             </div>
 
                             <!-- Terms and Conditions -->
                             <div class="form-check mb-4">
                                 <input id="terms" type="checkbox"
-                                    class="form-check-input @error('terms') is-invalid @enderror" name="terms" required>
+                                    class="form-check-input @error('terms') is-invalid @enderror" name="terms">
                                 <label for="terms" class="form-check-label text-muted"><small>Tôi đồng ý với <a
                                             href="#">Điều khoản & Điều kiện</a></small></label>
                                 @error('terms')

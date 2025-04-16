@@ -16,6 +16,7 @@ class HomeController extends Controller
         // 1. Tin nổi bật (is_featured): 5 tin (1 chính, 4 phụ - layout handled in view)
         $featuredNews = News::query()
             ->where('status', 'published')
+            ->whereNull('deleted_at')
             ->where('is_featured', true)
             ->orderByDesc('created_at') // Or specific order if needed
             ->limit(5)
@@ -24,14 +25,16 @@ class HomeController extends Controller
         // 2. Tin trending (is_trending): 10 tin
         $trendingNews = News::query()
             ->where('status', 'published')
+            ->whereNull('deleted_at')
             ->where('is_trending', true)
-            ->orderByDesc('views') // Assuming order by views makes sense for trending
+            ->orderByDesc('views')
             ->limit(10)
             ->get();
 
         // 3. Tin mới nhất: 10 tin
         $latestNews = News::query()
             ->where('status', 'published')
+            ->whereNull('deleted_at')
             ->orderByDesc('created_at')
             ->limit(10) // Changed limit to 10
             ->get();
@@ -40,6 +43,7 @@ class HomeController extends Controller
         $parentCategories = Category::query()
             ->whereNull('parent_id') // Get only parent categories
             ->where('status', 'Hiện')
+            ->whereNull('deleted_at')
             ->orderBy('name') // Order parent categories alphabetically or by preference
             ->get();
 
@@ -49,12 +53,14 @@ class HomeController extends Controller
             $childCategoryIds = Category::query()
                 ->where('parent_id', $parentCategory->id)
                 ->where('status', 'Hiện')
+                ->whereNull('deleted_at')
                 ->pluck('id'); // Get only the IDs
 
             // Get 10 news items belonging to these child categories, eager load category
             $news = News::query()
                 ->with('category') // Eager load the category relationship
                 ->where('status', 'published')
+                ->whereNull('deleted_at')
                 ->whereIn('category_id', $childCategoryIds) // News must belong to a child category
                 ->orderByDesc('created_at')
                 ->limit(4) // Corrected limit back to 10 as per original request
@@ -69,6 +75,7 @@ class HomeController extends Controller
         $hotNews = News::query()
             ->where('status', 'published')
             ->where('is_hot', true)
+            ->whereNull('deleted_at')
             ->orderByDesc('created_at') // Or specific order for hot news
             ->limit(5)
             ->get();
@@ -86,7 +93,7 @@ class HomeController extends Controller
             ->filter() // Remove any empty tags resulting from decoding issues or empty arrays
             ->unique() // Ensure uniqueness
             ->values() // Reset array keys
-            ->all();
+            ->take(15);
 
         $page_title = 'Trang chủ - ' . config('app.name', 'Laravel');
 

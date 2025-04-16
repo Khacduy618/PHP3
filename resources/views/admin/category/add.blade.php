@@ -3,7 +3,10 @@
 @section('content')
 
     <div class="container mt-4">
-        <h2>{{ $title }}</h2>
+        <div class="d-flex">
+            <h2>{{ $title }}</h2>
+            <button type="button" class="btn btn-secondary ms-auto" onclick="window.history.back();">Quay Lại</button>
+        </div>
         <form action="{{ route('admin.category.store') }}" method="POST">
             @csrf
             <div class="mb-3">
@@ -59,12 +62,12 @@
                 <div>
                     <div class="form-check form-check-inline">
                         <input class="form-check-input @error('status') is-invalid @enderror" type="radio" name="status"
-                            id="status_visible" value="1" {{ old('status') == '1' ? 'checked' : '' }}>
+                            id="status_visible" value="Hiện" {{ old('status') == 'Hiện' ? 'checked' : '' }}>
                         <label class="form-check-label" for="status_visible">Hiển thị</label>
                     </div>
                     <div class="form-check form-check-inline">
                         <input class="form-check-input @error('status') is-invalid @enderror" type="radio" name="status"
-                            id="status_hidden" value="0" {{ old('status') == '0' ? 'checked' : '' }}>
+                            id="status_hidden" value="Ẩn" {{ old('status') == 'Ẩn' ? 'checked' : '' }}>
                         <label class="form-check-label" for="status_hidden">Ẩn</label>
                     </div>
                 </div>

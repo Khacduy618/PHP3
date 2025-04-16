@@ -19,14 +19,19 @@ Route::get('/news/{slug}', [NewsController::class, 'show'])->name('news.show');
 // Route for displaying news filtered by tag
 Route::get('/tag/{tag}', [NewsController::class, 'showByTag'])->name('news.by_tag'); // Assuming showByTag method exists
 
-// Route for displaying news filtered by category slug
+// Route for displaying news filtered by category slug (child category)
 Route::get('/category/{slug}', [CategoryController::class, 'show'])->name('category.show');
+
+// Route for displaying news filtered by parent category slug
+Route::get('/parent-category/{slug}', [CategoryController::class, 'showParent'])->name('category.parent.show');
 
 // Route for handling news search
 Route::get('/search', [NewsController::class, 'search'])->name('news.search');
 
 // Route for main news listing page
 Route::get('/news', [NewsController::class, 'index'])->name('news.index');
+
+// API route for getting all categories as JSON
 
 // Removed redundant /tintrongloai route
 // Route::get('/tintrongloai', function () {
@@ -57,7 +62,9 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::put('/admin/categories/update/{slug}', [AdminCategoryController::class, 'update'])->name('admin.category.update'); // Changed POST to PUT
     Route::put('/admin/categories/hide/{slug}', [AdminCategoryController::class, 'hide'])->name('admin.category.hide');
     Route::put('/admin/categories/show/{slug}', [AdminCategoryController::class, 'show'])->name('admin.category.show');
+    Route::delete('/admin/categories/{slug}', [AdminCategoryController::class, 'destroy'])->name('admin.category.destroy'); // Add DELETE route
 
+    Route::get('/api/categories', [AdminCategoryController::class, 'apiIndex'])->name('api.categories.index');
 
     //News
     Route::get('/admin/news/create', [AdminNewsController::class, 'create'])->name('admin.news.create');
@@ -65,6 +72,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/news/list', [AdminNewsController::class, 'index'])->name('admin.news.list');
     Route::get('/admin/news/edit/{slug}', [AdminNewsController::class, 'edit'])->name('admin.news.edit');
     Route::put('/admin/news/update/{slug}', [AdminNewsController::class, 'update'])->name('admin.news.update');
+    Route::delete('/admin/news/{slug}', [AdminNewsController::class, 'destroy'])->name('admin.news.destroy'); // Add DELETE route
 
     // Route for CKEditor image uploads
     Route::post('/admin/ckeditor/upload', [AdminNewsController::class, 'ckeditorUpload'])->name('admin.ckeditor.upload');

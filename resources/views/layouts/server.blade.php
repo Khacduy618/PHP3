@@ -32,6 +32,9 @@
     <link rel="stylesheet" href="{{ asset('admin/assets/css/style.css') }}" id="main-style-link">
     <link rel="stylesheet" href="{{ asset('admin/assets/css/style-preset.css') }}">
 
+    {{-- Toastr CSS --}}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+
 </head>
 <!-- [Head] end -->
 <!-- [Body] Start -->
@@ -50,36 +53,10 @@
     <!-- [ Main Content ] start -->
     <div class="pc-container">
         <div class="pc-content">
-            <div class="col-xl-5 col-lg-5 col-md-3 ms-2">
-                @if(session('success'))
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        {{ session('success') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                @endif
-
-                @if(session('error'))
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        {{ session('error') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                @endif
-
-                @if($errors->any())
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <ul>
-                            @foreach($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                @endif
-            </div>
+            {{-- Removed the old alert display section --}}
 
             @yield('content')
         </div>
-
     </div>
     <!-- [ Main Content ] end -->
     <footer class="pc-footer">
@@ -98,8 +75,10 @@
     <script src="{{ asset('admin/assets/js/pcoded.js') }}"></script>
     <script src="{{ asset('admin/assets/js/plugins/feather.min.js') }}"></script>
 
-
-
+    {{-- jQuery (required for Toastr) --}}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    {{-- Toastr JS --}}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
 
     <script>layout_change('light');</script>
@@ -124,6 +103,52 @@
 
     {{-- Stack for page-specific scripts (like CKEditor init) --}}
     @stack('scripts')
+
+    {{-- Toastr Notification Script --}}
+    <script>
+        $(document).ready(function () {
+            toastr.options = {
+                "closeButton": true,
+                "debug": false,
+                "newestOnTop": true,
+                "progressBar": true,
+                "positionClass": "toast-top-right",
+                "preventDuplicates": false,
+                "onclick": null,
+                "showDuration": "300",
+                "hideDuration": "1000",
+                "timeOut": "5000", // 5 seconds
+                "extendedTimeOut": "1000",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            };
+
+            @if(Session::has('success'))
+                toastr.success("{{ Session::get('success') }}", "Success");
+            @endif
+
+            @if(Session::has('error'))
+                toastr.error("{{ Session::get('error') }}", "Error");
+            @endif
+
+            @if(Session::has('info'))
+                toastr.info("{{ Session::get('info') }}", "Info");
+            @endif
+
+            @if(Session::has('warning'))
+                toastr.warning("{{ Session::get('warning') }}", "Warning");
+            @endif
+
+            // Display validation errors
+            @if($errors->any())
+                @foreach ($errors->all() as $error)
+                    toastr.error("{{ $error }}", "Validation Error");
+                @endforeach
+            @endif
+        });
+    </script>
 
 </body>
 <!-- [Body] end -->

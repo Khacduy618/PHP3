@@ -74,9 +74,10 @@
                         @endforeach
 
                         {{-- Pagination Links --}}
+                        {{-- Pagination Links --}}
                         <div class="row justify-content-center pt-4">
                             <div class="col-md-12 text-center">
-                                {{ $newsItems->links() }} {{-- Render pagination links --}}
+                                {{ $newsItems->links('pagination::bootstrap-5') }} {{-- Render Bootstrap 5 pagination --}}
                             </div>
                         </div>
                     @else

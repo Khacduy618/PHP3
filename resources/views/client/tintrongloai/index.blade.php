@@ -16,7 +16,9 @@
 
                     {{-- Sorting Dropdown --}}
                     <div class="d-flex justify-content-end mb-3">
-                        <form action="{{ route('category.show', $category->slug) }}" method="GET">
+                        <form
+                            action="@if(is_null($category->parent_id)){{ route('category.parent.show', $category->slug) }}@else{{ route('category.show', $category->slug) }}@endif"
+                            method="GET">
                             <select name="sort_by" class="form-select form-select-sm" onchange="this.form.submit()">
                                 <option value="date" {{ $sortBy == 'date' ? 'selected' : '' }}>Mới nhất</option>
                                 <option value="views" {{ $sortBy == 'views' ? 'selected' : '' }}>Xem nhiều</option>

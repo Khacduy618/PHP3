@@ -5,7 +5,7 @@
             <div class="fh5co_heading fh5co_heading_border_bottom py-2 mb-4">Thẻ</div>
         </div>
         <div class="clearfix"></div>
-        <div class="fh5co_tags_all " style="min-height: 300px;">
+        <div class="fh5co_tags_all " style="min-height: 300px; max-height:480px;">
             @foreach ($allTags as $tag)
                 {{-- Assuming a route like 'news.by_tag' exists --}}
                 <a href="{{ route('news.by_tag', ['tag' => urlencode($tag)]) }}" class="fh5co_tagg">{{ $tag }}</a>

@@ -12,24 +12,24 @@
                 <ul class="navbar-nav mr-auto">
                     {{-- Home Link --}}
                     <li class="nav-item {{ request()->routeIs('home') ? 'active' : '' }}">
-                        <a class="nav-link" href="{{ route('home') }}">Trang chủ <span
-                                class="sr-only">(current)</span></a>
+                        <a class="nav-link" href="{{ route('home') }}">Trang chủ</a>
                     </li>
 
                     {{-- Dynamic Categories from MenuComposer --}}
                     @if (isset($menuCategories))
                         @foreach ($menuCategories as $parentCategory)
                             @if ($parentCategory->children->isNotEmpty())
-                                {{-- Category with Children (Dropdown) --}}
+                                {{-- Category with Children (Dropdown on Hover) --}}
                                 <li class="nav-item dropdown">
-                                    {{-- Use data-bs-toggle for Bootstrap 5 --}}
-                                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown{{ $parentCategory->id }}"
-                                        role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    {{-- Link now goes to parent category page, dropdown triggered by CSS hover --}}
+                                    <a class="nav-link" href="{{ route('category.parent.show', $parentCategory->slug) }}"
+                                        id="navbarDropdown{{ $parentCategory->id }}">
                                         {{ $parentCategory->name }}
                                     </a>
+                                    {{-- Dropdown menu remains for hover effect --}}
                                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown{{ $parentCategory->id }}">
                                         @foreach ($parentCategory->children as $childCategory)
-                                            {{-- Assuming route 'category.show' exists --}}
+                                            {{-- Link to child category page --}}
                                             <li><a class="dropdown-item"
                                                     href="{{ route('category.show', $childCategory->slug) }}">{{ $childCategory->name }}</a>
                                             </li>
@@ -39,7 +39,7 @@
                             @else
                                 {{-- Category without Children (Regular Link) --}}
                                 <li class="nav-item">
-                                    {{-- Assuming route 'category.show' exists --}}
+                                    {{-- Link to category page --}}
                                     <a class="nav-link"
                                         href="{{ route('category.show', $parentCategory->slug) }}">{{ $parentCategory->name }}</a>
                                 </li>
@@ -56,3 +56,17 @@
         </nav>
     </div>
 </div>
+
+{{-- Basic CSS for Hover Dropdown (Add to your main CSS file ideally) --}}
+<style>
+    .dropdown:hover>.dropdown-menu {
+        display: block;
+        margin-top: 0;
+        /* Adjust if needed */
+    }
+
+    .dropdown>.dropdown-toggle:active {
+        /* Prevent dropdown staying open on mobile tap */
+        pointer-events: none;
+    }
+</style>

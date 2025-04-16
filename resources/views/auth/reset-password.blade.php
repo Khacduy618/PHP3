@@ -3,12 +3,13 @@
     <div class="container my-5">
         <div class="row justify-content-center">
             {{-- Image Column --}}
-            <div class="col-6 login d-none d-md-block">
-                <img src="{{ asset('site/images/venom-login.jpg') }}" alt="Reset Password Image" class="img-fluid">
+            <div class="col-6 p-0" style="width:fit-content">
+                <img src="{{ asset('site/images/venom-login.jpg') }}" alt="Reset Password Image"
+                    class="rounded-start shadow" style="width:550px; height:416px">
             </div>
             {{-- Form Column --}}
-            <div class="col-md-6 col-12">
-                <div class="card shadow-lg border-0 rounded-lg">
+            <div class="col-6 p-0" style="height:fit-content;">
+                <div class="card shadow-lg border-0 rounded-end">
                     <div class="card-body p-4 p-md-5">
                         <h1 class="text-center mb-4" style="font-weight: 600;">Đặt lại mật khẩu</h1>
 
@@ -22,7 +23,7 @@
                             <div class="form-group mb-3">
                                 <label for="email" class="form-label visually-hidden">{{ __('Email') }}</label>
                                 <input id="email" class="form-control form-control-lg @error('email') is-invalid @enderror"
-                                    type="email" name="email" value="{{ old('email', $request->email) }}" required autofocus
+                                    type="text" name="email" value="{{ old('email', $request->email) }}" autofocus
                                     autocomplete="username" placeholder="Email"
                                     style="border-radius: 25px; background-color: #f8f9fa;" />
                                 @error('email')
@@ -37,8 +38,8 @@
                                 <label for="password" class="form-label visually-hidden">{{ __('Mật khẩu') }}</label>
                                 <input id="password"
                                     class="form-control form-control-lg @error('password') is-invalid @enderror"
-                                    type="password" name="password" required autocomplete="new-password"
-                                    placeholder="Mật khẩu mới" style="border-radius: 25px; background-color: #f8f9fa;" />
+                                    type="password" name="password" autocomplete="new-password" placeholder="Mật khẩu mới"
+                                    style="border-radius: 25px; background-color: #f8f9fa;" />
                                 @error('password')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -51,7 +52,7 @@
                                 <label for="password_confirmation"
                                     class="form-label visually-hidden">{{ __('Xác nhận mật khẩu') }}</label>
                                 <input id="password_confirmation" class="form-control form-control-lg" type="password"
-                                    name="password_confirmation" required autocomplete="new-password"
+                                    name="password_confirmation" autocomplete="new-password"
                                     placeholder="Xác nhận mật khẩu mới"
                                     style="border-radius: 25px; background-color: #f8f9fa;" />
                                 {{-- Error display for password_confirmation is usually handled by the 'password' field's

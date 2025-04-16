@@ -13,20 +13,47 @@ use Illuminate\Support\Facades\Auth; // Import Auth facade if not already import
 
 class AdminUserController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+
+    public function index(Request $request) // Inject Request
     {
         $page_title = "Quản lý Người dùng - Danh sách";
         $title = "Danh sách Người dùng";
-        // Fetch users including soft-deleted, order by status (deleted last), then by creation date
-        $users = User::withTrashed()
-            ->orderByRaw('deleted_at IS NULL DESC') // Active users first
-            ->orderBy('created_at', 'desc')->get();
+
+        // Get sorting parameters from request, set defaults
+        $sortBy = $request->query('sort_by', 'created_at'); // Default sort by creation date
+        $sortDir = $request->query('sort_dir', 'desc'); // Default sort direction
+
+        // Validate sortable columns
+        $sortableColumns = ['id', 'name', 'email', 'role', 'created_at'];
+        if (!in_array($sortBy, $sortableColumns)) {
+            $sortBy = 'created_at'; // Fallback to default
+        }
+        if (!in_array($sortDir, ['asc', 'desc'])) {
+            $sortDir = 'desc'; // Fallback to default
+        }
+
+        // Build the query
+        $userQuery = User::withTrashed(); // Include soft-deleted
+
+        // Apply search filter if present
+        if ($request->has('search') && $request->search != '') {
+            $searchTerm = $request->search;
+            $userQuery->where(function ($query) use ($searchTerm) {
+                $query->where('name', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('email', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('role', 'like', '%' . $searchTerm . '%');
+            });
+        }
+
+        // Apply sorting
+        $userQuery->orderByRaw('deleted_at IS NULL DESC'); // Keep active/deleted sorting first
+        $userQuery->orderBy($sortBy, $sortDir); // Apply user sorting
+
+        // Paginate results
+        $users = $userQuery->paginate(10)->appends($request->query()); // Use paginate() and append query string
 
         // Assuming the view will be at resources/views/admin/users/list.blade.php
-        return view('admin.users.list', compact('users', 'title', 'page_title'));
+        return view('admin.users.list', compact('users', 'title', 'page_title', 'sortBy', 'sortDir')); // Pass sorting params
     }
 
     /**

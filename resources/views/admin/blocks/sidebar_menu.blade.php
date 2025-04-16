@@ -109,7 +109,7 @@
                     </ul>
                 </li>
                 <li class="pc-item pc-hasmenu">
-                    <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-menu"></i></span><span
+                    <a href="#!" class="pc-link"><span class="pc-micon"><i class="ti ti-news"></i></span><span
                             class="pc-mtext">Quản trị tin tức</span><span class="pc-arrow"><i
                                 data-feather="chevron-right"></i></span></a>
                     <ul class="pc-submenu">

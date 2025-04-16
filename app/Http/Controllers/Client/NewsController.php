@@ -29,6 +29,7 @@ class NewsController extends Controller
                 }
             ])
             ->where('slug', $slug)
+            ->whereNull('deleted_at')
             ->where('status', 'published')
             ->firstOrFail();
 
@@ -43,11 +44,13 @@ class NewsController extends Controller
             ->where('category_id', $newsItem->category_id)
             ->where('id', '!=', $newsItem->id)
             ->where('status', 'published')
+            ->whereNull('deleted_at')
             ->orderByDesc('created_at')
             ->limit(4)
             ->get();
         $hotNews = News::query()
             ->where('status', 'published')
+            ->whereNull('deleted_at')
             ->where('is_hot', true)
             ->orderByDesc('created_at')
             ->limit(5)
@@ -55,6 +58,7 @@ class NewsController extends Controller
 
         $allTags = News::query()
             ->where('status', 'published')
+            ->whereNull('deleted_at')
             ->whereNotNull('tags') // Still check if the JSON column is not null
             // ->where('tags', '!=', '') // No longer needed for JSON
             ->pluck('tags') // Pluck the 'tags' column (which contains JSON strings)
@@ -65,9 +69,10 @@ class NewsController extends Controller
             ->filter() // Remove any empty tags resulting from decoding issues or empty arrays
             ->unique() // Ensure uniqueness
             ->values() // Reset array keys
-            ->all();
+            ->take(15);
         $trendingNews = News::query()
             ->where('status', 'published')
+            ->whereNull('deleted_at')
             ->where('is_trending', true)
             ->orderByDesc('views')
             ->limit(10)
@@ -88,38 +93,9 @@ class NewsController extends Controller
         return view('client.chitiettin.index', compact('page_title', 'newsItem', 'hotNews', 'allTags', 'relatedNews', 'trendingNews', 'likedCommentIds'));
     }
 
-    /**
-     * Display news articles for a specific category.
-     *
-     * @param  string  $slug
-     * @return \Illuminate\View\View
-     */
-    public function showByCategory(string $slug)
-    {
-        $category = Category::query()
-            ->where('slug', $slug)
-            ->where('status', 'active')
-            ->firstOrFail();
 
-        $newsInCategory = News::query()
-            ->where('category_id', $category->id)
-            ->where('status', 'published')
-            ->orderByDesc('created_at')
-            ->paginate(10); // Add pagination
 
-        $page_title = 'Danh mục: ' . $category->name . ' - ' . config('app.name', 'Laravel');
 
-        // Assuming you have a view file at resources/views/client/tintrongloai/index.blade.php
-        return view('client.tintrongloai.index', compact('page_title', 'category', 'newsInCategory'));
-    }
-
-    /**
-     * Display news articles for a specific tag.
-     *
-     * @param  string  $tag
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\View\View
-     */
     public function showByTag(string $tag, Request $request) // Added Request $request
     {
         $decodedTag = urldecode($tag);
@@ -128,6 +104,7 @@ class NewsController extends Controller
         $newsQuery = News::query()
             ->whereJsonContains('tags', $decodedTag) // Search JSON array
             ->where('status', 'published')
+            ->whereNull('deleted_at')
             ->with(['category', 'user']) // Eager load relationships
             ->withCount(['likers', 'comments']); // Ensure using 'likers'
 
@@ -150,12 +127,13 @@ class NewsController extends Controller
         }
 
         // Paginate the results and append sorting parameter
-        $newsWithTag = $newsQuery->paginate(10)->appends($request->query());
+        $newsWithTag = $newsQuery->paginate(5)->appends($request->query());
 
         // Fetch data for included blocks (Sidebar and Trending) as Composers were denied
         $hotNews = News::query()
             ->where('status', 'published')
             ->where('is_hot', true)
+            ->whereNull('deleted_at')
             ->orderByDesc('created_at')
             ->limit(5)
             ->get();
@@ -172,11 +150,12 @@ class NewsController extends Controller
             ->filter() // Remove empty tags
             ->unique()
             ->values()
-            ->all();
+            ->take(15);
 
         $trendingNews = News::query()
             ->where('status', 'published')
             ->where('is_trending', true)
+            ->whereNull('deleted_at')
             ->orderByDesc('views')
             ->limit(10)
             ->get();
@@ -266,7 +245,7 @@ class NewsController extends Controller
             ->filter() // Remove any empty tags resulting from decoding issues or empty arrays
             ->unique() // Ensure uniqueness
             ->values() // Reset array keys
-            ->all();
+            ->take(15);
 
         $trendingNews = News::query()
             ->where('status', 'published')

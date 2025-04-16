@@ -3,12 +3,13 @@
     <div class="container my-5">
         <div class="row justify-content-center">
             {{-- Image Column --}}
-            <div class="col-6 login d-none d-md-block"> {{-- Hide on small screens --}}
-                <img src="{{ asset('site/images/venom-login.jpg') }}" alt="Forgot Password Image" class="img-fluid">
+            <div class="col-6 p-0" style="width:fit-content"> {{-- Hide on small screens --}}
+                <img src="{{ asset('site/images/venom-login.jpg') }}" alt="Forgot Password Image"
+                    class="rounded-start shadow" style="width:500px; height:400px">
             </div>
             {{-- Form Column --}}
-            <div class="col-md-6 col-12">
-                <div class="card shadow-lg border-0 rounded-lg">
+            <div class=" col-6 p-0" style="height:fit-content;">
+                <div class="card shadow-lg border-0 rounded-end">
                     <div class="card-body p-4 p-md-5">
                         <h1 class="text-center mb-3" style="font-weight: 600;">Quên mật khẩu?</h1>
                         <div class="mb-4 text-sm text-muted text-center">
@@ -30,8 +31,8 @@
                                 <label for="email" class="form-label visually-hidden">{{ __('Email') }}</label> {{-- Hide
                                 label visually but keep for accessibility --}}
                                 <input id="email" class="form-control form-control-lg @error('email') is-invalid @enderror"
-                                    type="email" name="email" value="{{ old('email') }}" required autofocus
-                                    placeholder="Email" style="border-radius: 25px; background-color: #f8f9fa;" />
+                                    type="text" name="email" value="{{ old('email') }}" autofocus placeholder="Email"
+                                    style="border-radius: 25px; background-color: #f8f9fa;" />
                                 @error('email')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>

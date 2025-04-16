@@ -18,10 +18,12 @@ class MenuComposer
         // Fetch parent categories (status 'Hiện') with their active children (status 'Hiện')
         $menuCategories = Category::query()
             ->whereNull('parent_id') // Parent categories
-            ->where('status', 'Hiện')   // Only active parent categories
+            ->where('status', 'Hiện')
+            ->whereNull('deleted_at')   // Only active parent categories
             ->with([
                 'children' => function ($query) {
-                    $query->where('status', 'Hiện') // Only active child categories
+                    $query->where('status', 'Hiện')
+                        ->whereNull('deleted_at') // Only active child categories
                         ->orderBy('name'); // Order children alphabetically
                 }
             ])
