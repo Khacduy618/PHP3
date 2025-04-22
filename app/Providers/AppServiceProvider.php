@@ -17,12 +17,13 @@ class AppServiceProvider extends ServiceProvider
     {
         //
     }
-
     /**
      * Bootstrap any application services.
      */
     public function boot(): void
     {
+        \Log::info('AppServiceProvider booted.');
+
         // Use Bootstrap 5 for pagination views
         Paginator::useBootstrapFive();
 

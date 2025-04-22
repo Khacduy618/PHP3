@@ -162,7 +162,7 @@ class AdminCategoryController extends Controller
 
         // Proceed with regular update validation and logic
         $request->validate([
-            'name' => 'required|max:255',
+            'name' => 'required|max:255|unique:categories,name',
             'slug' => ['required', 'max:255', Rule::unique('categories')->ignore($category->id)], // Use Rule for uniqueness check
             'description' => 'required',
             'parent_id' => 'nullable|exists:categories,id',
@@ -202,10 +202,6 @@ class AdminCategoryController extends Controller
     {
         // Find the category by slug
         $category = Category::where('slug', $slug)->firstOrFail();
-
-        // TODO: Add logic here to handle child categories or related news if necessary
-        // For example, prevent deletion if it has children, or reassign news items.
-        // For now, we'll just soft delete the category.
 
         // Set status to 'Hidden' before soft deleting
         $category->status = 'Ẩn';

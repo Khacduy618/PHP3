@@ -11,7 +11,11 @@ use Illuminate\Support\Facades\Storage; // Import Storage facade
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;        // Import Str facade
 use Illuminate\Support\Facades\Auth; // Import Auth facade
+use App\Mail\NewsCreatedNotification;
+use App\Models\Subscriber;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 
 class AdminNewsController extends Controller
 {
@@ -97,12 +101,22 @@ class AdminNewsController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'title' => 'required|string|max:255|unique:news.title',
+            'title' => 'required|string|max:255|unique:news,title',
             'category_id' => 'required|exists:categories,id',
             'content' => 'required|string',
             'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'status' => 'required|in:draft,published',
         ]);
+
+        // Check if the title already exists, excluding the current news item if it's an update
+        $titleExists = News::where('title', $request->title)
+            ->exists();
+
+        if ($titleExists) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'title' => ['The title has already been taken.'],
+            ]);
+        }
 
         $imagePath = null;
         if ($request->hasFile('image')) {
@@ -127,7 +141,24 @@ class AdminNewsController extends Controller
             'is_trending' => $request->boolean('is_trending'),
         ]);
 
-        return redirect()->route('admin.news.list')->with('success', 'Tin tức đã được thêm thành công!'); // Redirect to list view
+        $news = News::latest()->first();
+
+        if ($request->status === 'published') {
+            $subscribers = Subscriber::all();
+
+            foreach ($subscribers as $subscriber) {
+                try {
+                    $mailTo = Mail::to($subscriber->email);
+                    Log::info('Sending email to: ' . $subscriber->email);
+                    $result = $mailTo->send(new NewsCreatedNotification($news, $subscriber));
+                    Log::info('Email sent to: ' . $subscriber->email . ' - Result: ' . ($result === null ? 'Success' : 'Failure'));
+                } catch (\Exception $e) {
+                    Log::error('Failed to send email to: ' . $subscriber->email . ' - ' . $e->getMessage());
+                }
+            }
+        }
+
+        return redirect()->route('admin.news.list')->with('success', 'Tin tức đã được thêm thành công!');
     }
 
     /**
@@ -135,8 +166,7 @@ class AdminNewsController extends Controller
      */
     public function show(string $slug)
     {
-
-        $news = DB::table('news')->where('slug', $slug)->first();
+        $news = News::where('slug', $slug)->first();
         $title = $news->title;
         $page_title = 'NEWS - ' . $title;
         return view('client.details', compact('news', 'page_title'));
@@ -148,8 +178,8 @@ class AdminNewsController extends Controller
         $page_title = 'NEWS - Chỉnh sửa tin tức';
         $title = 'Chỉnh sửa tin tức';
 
-        $news = DB::table('news')->where('slug', $slug)->first();
-        $categories = DB::table('categories')->limit(6)->get();
+        $news = News::where('slug', $slug)->first();
+        $categories = Category::limit(6)->get();
         return view('admin.news.edit', compact('news', 'categories', 'title', 'page_title'));
     }
 
@@ -172,7 +202,7 @@ class AdminNewsController extends Controller
 
         // Proceed with regular update validation and logic
         $request->validate([
-            'title' => 'required|string|max:255|unique:news,title',
+            'title' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
             'content' => 'required|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Image is optional on update

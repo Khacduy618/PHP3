@@ -116,13 +116,17 @@
             </li>
             <li class="dropdown pc-h-item header-user-profile">
                 @if(Auth::check())
+                                    <div class="img-avatar"
+                                        style="width: 35px; height: 35px; border-radius: 50%; overflow: hidden; margin-right: 0px; vertical-align: middle;">
+                                        <img src="{{ Auth::user()->avatar ? Storage::url(Auth::user()->avatar) : asset('admin/assets/images/user/avatar-2.jpg') }}"
+                                            alt="user-image" class="user-avtar" style="max-width:100%; object-fit: cover;"
+                                            onerror="this.onerror=null;this.src='{{ asset('admin/assets/images/user/avatar-2.jpg') }}';">
+                                        {{-- Use Auth User Name --}}
+                                    </div>
                                     <a class="pc-head-link dropdown-toggle arrow-none me-0" data-bs-toggle="dropdown" href="#" role="button"
                                         aria-haspopup="false" data-bs-auto-close="outside" aria-expanded="false">
                                         {{-- Use Auth User Avatar --}}
-                                        <img src="{{ Auth::user()->avatar ? Storage::url(Auth::user()->avatar) : asset('admin/assets/images/user/avatar-2.jpg') }}"
-                                            alt="user-image" class="user-avtar"
-                                            onerror="this.onerror=null;this.src='{{ asset('admin/assets/images/user/avatar-2.jpg') }}';">
-                                        {{-- Use Auth User Name --}}
+
                                         <span>{{ Auth::user()->name }}</span>
                                     </a>
                                     <div class="dropdown-menu dropdown-user-profile dropdown-menu-end pc-h-dropdown">

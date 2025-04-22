@@ -22,16 +22,19 @@
                             style="text-decoration: none;">Đăng ký</a>
                     @endif
                 @else
+                    <div class="img-avatar"
+                        style="width: 35px; height: 35px; border-radius: 50%; overflow: hidden; margin-right: 5px; vertical-align: middle;">
+                        <img src="{{ Auth::user()->avatar ? Storage::url(Auth::user()->avatar) : asset('site/images/person_1.jpg') }}"
+                            alt="{{ Auth::user()->name }}" style="max-width:100%; object-fit: cover;"
+                            onerror="this.onerror=null;this.src='{{ asset('site/images/person_1.jpg') }}';">
+                    </div>
                     {{-- Show User Dropdown if logged in --}}
                     <div class="dropdown" style="display: inline-block;"> {{-- Use inline-block for dropdown --}}
+
                         <a class="color_fff fh5co_mediya_setting dropdown-toggle" href="#" role="button"
                             id="userDropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false"
                             style="text-decoration: none;">
-                            {{-- User Avatar with fallback --}}
-                            <img src="{{ Auth::user()->avatar ? Storage::url(Auth::user()->avatar) : asset('site/images/person_1.jpg') }}"
-                                alt="{{ Auth::user()->name }}"
-                                style="width: 24px; height: 24px; border-radius: 50%; margin-right: 5px; vertical-align: middle;"
-                                onerror="this.onerror=null;this.src='{{ asset('site/images/person_1.jpg') }}';">
+
                             <span style="vertical-align: middle;">{{ Auth::user()->name }}</span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdownMenuLink"

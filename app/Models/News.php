@@ -12,6 +12,9 @@ class News extends Model
 {
     use HasFactory, SoftDeletes; // Re-add SoftDeletes trait
 
+    protected $connection = 'mysql';
+
+    protected $table = 'news';
     protected $fillable = [
         'title',
         'content',

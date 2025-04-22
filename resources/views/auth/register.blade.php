@@ -24,7 +24,7 @@
                             </div>
                         @endif
 
-                        <form method="POST" action="{{ route('register') }}">
+                        <form method="POST" action="{{ route('register') }}" enctype="multipart/form-data">
                             @csrf
 
                             <!-- Name -->
@@ -40,7 +40,27 @@
                                     </span>
                                 @enderror
                             </div>
-
+                            <!-- Avatar -->
+                            <div class="form-group mb-3">
+                                <div class="row">
+                                    <div class="col-4 d-flex align-items-center justify-content-center">
+                                        <label for="avatar">
+                                            Chọn ảnh đại diện:
+                                        </label>
+                                    </div>
+                                    <div class="col-8">
+                                        <input id="avatar"
+                                            class="form-control form-control-lg @error('avatar') is-invalid @enderror"
+                                            type="file" name="avatar" value="{{ old('avatar') }}"
+                                            style=" border-radius: 10px; background-color: #f8f9fa;" />
+                                        @error('avatar')
+                                            <span class="invalid-feedback" role="alert">
+                                                <strong>{{ $message }}</strong>
+                                            </span>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
                             <!-- Email Address -->
                             <div class="form-group mb-3">
                                 <input id="email" class="form-control form-control-lg @error('email') is-invalid @enderror"

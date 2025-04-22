@@ -64,18 +64,22 @@
                 @endisset
             </div>
         </div>
-        <!-- <div class="row justify-content-center pt-2 pb-4">
+        <div class="row justify-content-center pt-2 pb-4">
             <div class="col-12 col-md-8 col-lg-7 ">
-                <div class="input-group">
-                    <span class="input-group-addon fh5co_footer_text_box" id="basic-addon1"><i
-                            class="fa fa-envelope"></i></span>
-                    <input type="text" class="form-control fh5co_footer_text_box" placeholder="Nhập email của bạn..."
-                        aria-describedby="basic-addon1">
-                    <a href="#" class="input-group-addon fh5co_footer_subcribe" id="basic-addon12"> <i
-                            class="fa fa-paper-plane-o"></i>&nbsp;&nbsp;Đăng ký</a>
-                </div>
+                <form action="{{ route('subscribe') }}" method="post">
+                    @csrf
+                    <div class="input-group">
+                        <span class="input-group-addon fh5co_footer_text_box" id="basic-addon1"><i
+                                class="fa fa-envelope"></i></span>
+                        <input type="email" name="email" class="form-control fh5co_footer_text_box"
+                            placeholder="Nhập email của bạn..." aria-describedby="basic-addon1" required>
+                        <button class="input-group-addon fh5co_footer_subcribe" id="basic-addon12" type="submit">
+                            <i class="fa fa-paper-plane-o"></i>&nbsp;&nbsp;Đăng ký
+                        </button>
+                    </div>
+                </form>
             </div>
-        </div> -->
+        </div>
     </div>
 </div>
 <!-- <div class="container-fluid fh5co_footer_right_reserved">

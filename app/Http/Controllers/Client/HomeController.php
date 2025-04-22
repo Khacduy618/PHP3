@@ -6,8 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\News;
 use Illuminate\Http\Request;
+use App\Models\Subscriber;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB; // Keep DB facade for tags if needed, or remove if using Eloquent pluck/map
 use Illuminate\Database\Eloquent\Builder; // Import Builder for type hinting
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\URL;
 
 class HomeController extends Controller
 {
@@ -18,7 +22,7 @@ class HomeController extends Controller
             ->where('status', 'published')
             ->whereNull('deleted_at')
             ->where('is_featured', true)
-            ->orderByDesc('created_at') // Or specific order if needed
+            ->orderByDesc('created_at')
             ->limit(5)
             ->get();
 
@@ -36,69 +40,63 @@ class HomeController extends Controller
             ->where('status', 'published')
             ->whereNull('deleted_at')
             ->orderByDesc('created_at')
-            ->limit(10) // Changed limit to 10
+            ->limit(10)
             ->get();
 
         // 4. Tin tức theo loại (tintrongloai): Parent categories + 10 news per parent group
         $parentCategories = Category::query()
-            ->whereNull('parent_id') // Get only parent categories
+            ->whereNull('parent_id')
             ->where('status', 'Hiện')
             ->whereNull('deleted_at')
-            ->orderBy('name') // Order parent categories alphabetically or by preference
+            ->orderBy('name')
             ->get();
 
         $newsByParentCategory = [];
         foreach ($parentCategories as $parentCategory) {
-            // Get IDs of direct children categories
             $childCategoryIds = Category::query()
                 ->where('parent_id', $parentCategory->id)
                 ->where('status', 'Hiện')
                 ->whereNull('deleted_at')
-                ->pluck('id'); // Get only the IDs
+                ->pluck('id');
 
-            // Get 10 news items belonging to these child categories, eager load category
             $news = News::query()
-                ->with('category') // Eager load the category relationship
+                ->with('category')
                 ->where('status', 'published')
                 ->whereNull('deleted_at')
-                ->whereIn('category_id', $childCategoryIds) // News must belong to a child category
+                ->whereIn('category_id', $childCategoryIds)
                 ->orderByDesc('created_at')
-                ->limit(4) // Corrected limit back to 10 as per original request
+                ->limit(4)
                 ->get();
 
-            if ($news->isNotEmpty()) { // Only add if there's news
+            if ($news->isNotEmpty()) {
                 $newsByParentCategory[$parentCategory->id] = $news;
             }
         }
 
-        // 5. Tags & Tin hot (is_hot): 10 tin hot + unique tags
         $hotNews = News::query()
             ->where('status', 'published')
             ->where('is_hot', true)
             ->whereNull('deleted_at')
-            ->orderByDesc('created_at') // Or specific order for hot news
+            ->orderByDesc('created_at')
             ->limit(5)
             ->get();
 
-        // Assuming 'tags' is a comma-separated string column in the 'news' table
         $allTags = News::query()
             ->where('status', 'published')
-            ->whereNotNull('tags') // Still check if the JSON column is not null
-            // ->where('tags', '!=', '') // No longer needed for JSON
-            ->pluck('tags') // Pluck the 'tags' column (which contains JSON strings)
+            ->whereNotNull('tags')
+            ->pluck('tags')
             ->flatMap(function ($jsonString) {
-                // Decode each JSON string into an array, handle potential nulls/errors
                 return json_decode($jsonString, true) ?? [];
             })
-            ->filter() // Remove any empty tags resulting from decoding issues or empty arrays
-            ->unique() // Ensure uniqueness
-            ->values() // Reset array keys
+            ->filter()
+            ->unique()
+            ->values()
             ->take(15);
 
         $page_title = 'Trang chủ - ' . config('app.name', 'Laravel');
 
         return view('client.home.home', compact(
-            'page_title', // Add page title
+            'page_title',
             'featuredNews',
             'trendingNews',
             'latestNews',
@@ -107,5 +105,31 @@ class HomeController extends Controller
             'hotNews',
             'allTags'
         ));
+    }
+
+    public function subscribe(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|unique:subscribers',
+        ]);
+
+        Subscriber::create([
+            'email' => $request->email,
+            'unsubscribe_token' => Str::uuid(),
+        ]);
+
+        return redirect()->back()->with('success', 'Cảm ơn bạn đã đăng ký!');
+    }
+
+    public function unsubscribe($token)
+    {
+        $subscriber = Subscriber::where('unsubscribe_token', $token)->first();
+
+        if ($subscriber) {
+            $subscriber->delete();
+            return redirect('/')->with('success', 'Bạn đã hủy đăng ký thành công!');
+        } else {
+            return redirect('/')->with('error', 'Mã hủy đăng ký không hợp lệ.');
+        }
     }
 }

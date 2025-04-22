@@ -10,6 +10,8 @@ class Category extends Model
 {
     use HasFactory, SoftDeletes; // Re-add SoftDeletes trait
 
+    protected $connection = 'mysql';
+
     protected $fillable = [
         'name',
         'slug',

@@ -23,8 +23,8 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
-        'avatar',
         'password',
+        'avatar', // add avatar to fillable
         'remember_token',
         'email_verified_at',
         'role',

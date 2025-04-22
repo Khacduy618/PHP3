@@ -7,6 +7,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>{{ $page_title }}</title>
+    <link rel="icon" href="{{ asset('site/images/logo.png') }}" type="image/x-icon">
 
     <!-- Kiểm tra đường dẫn asset -->
     <link href="{{ asset('site/css/media_query.css') }}" rel="stylesheet" type="text/css" />
@@ -24,6 +25,8 @@
     <link href="{{ asset('site/css/owl.theme.default.css') }}" rel="stylesheet" type="text/css" />
     <!-- Bootstrap CSS -->
     <link href="{{ asset('site/css/style_1.css') }}" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+
     <!-- Modernizr JS -->
     <script src="{{ asset('site/js/modernizr-3.5.0.min.js') }}"></script>
 
@@ -67,7 +70,52 @@
     <!-- Main -->
     <script src="{{ asset('site/js/main.js') }}"></script>
     <script>if (!navigator.userAgent.match(/Android|BlackBerry|iPhone|iPad|iPod|Opera Mini|IEMobile/i)) { $(window).stellar(); }</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    {{-- Toastr Notification Script --}}
+    <script>
+        $(document).ready(function () {
+            toastr.options = {
+                "closeButton": true,
+                "debug": false,
+                "newestOnTop": true,
+                "progressBar": true,
+                "positionClass": "toast-top-right",
+                "preventDuplicates": false,
+                "onclick": null,
+                "showDuration": "300",
+                "hideDuration": "1000",
+                "timeOut": "5000", // 5 seconds
+                "extendedTimeOut": "1000",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            };
 
+            @if(Session::has('success'))
+                toastr.success("{{ Session::get('success') }}", "Success");
+            @endif
+
+            @if(Session::has('error'))
+                toastr.error("{{ Session::get('error') }}", "Error");
+            @endif
+
+            @if(Session::has('info'))
+                toastr.info("{{ Session::get('info') }}", "Info");
+            @endif
+
+            @if(Session::has('warning'))
+                toastr.warning("{{ Session::get('warning') }}", "Warning");
+            @endif
+
+            // Display validation errors
+            @if($errors->any())
+                @foreach ($errors->all() as $error)
+                    toastr.error("{{ $error }}", "Validation Error");
+                @endforeach
+            @endif
+        });
+    </script>
     {{-- Stack for page-specific scripts --}}
     @stack('scripts')
 </body>
