@@ -46,7 +46,7 @@
             <div class="mb-3">
                 <label for="role" class="form-label">Vai trò</label>
                 <select class="form-select @error('role') is-invalid @enderror" id="role" name="role" required>
-                    <option value="user" {{ old('role') == 'user' ? 'selected' : '' }}>Người dùng</option>
+                    <option value="viewer" {{ old('role') == 'viewer' ? 'selected' : '' }}>Người dùng</option>
                     <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Quản trị viên</option>
                 </select>
                 @error('role')
@@ -56,7 +56,7 @@
 
             {{-- Avatar --}}
             <div class="mb-3">
-                <label for="avatar" class="form-label">Ảnh đại diện (Tùy chọn)</label>
+                <label for="avatar" class="form-label">Ảnh đại diện (Tùy chọn)<small>(300px x 300px)</small></label>
                 <input type="file" class="form-control @error('avatar') is-invalid @enderror" id="avatar" name="avatar"
                     accept="image/*">
                 @error('avatar')

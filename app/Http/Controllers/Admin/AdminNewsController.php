@@ -61,10 +61,37 @@ class AdminNewsController extends Controller
         // Apply category filter if present
         if ($request->has('category_id') && $request->category_id != '') {
             $categoryId = $request->category_id;
-            // If you want to include news from child categories when a parent is selected,
-            // you might need more complex logic here to get all child IDs.
-            // For now, it filters by the exact category ID selected.
-            $newsQuery->where('category_id', $categoryId);
+
+            // Get the selected category
+            $category = Category::find($categoryId);
+
+            if ($category && $category->children->isNotEmpty()) {
+                // Get all child category IDs
+                $childCategoryIds = $category->children->pluck('id')->toArray();
+
+                // Add the parent category ID to the array
+                $categoryIds = array_merge([$categoryId], $childCategoryIds);
+
+                // Modify the query to include news from the selected category and all its children
+                $newsQuery->whereIn('category_id', $categoryIds);
+            } else {
+                // If no children, filter by the selected category ID
+                $newsQuery->where('category_id', $categoryId);
+            }
+        }
+
+        // Apply status filter
+        if ($request->has('status') && $request->status != '') {
+            $newsQuery->where('status', $request->status);
+        }
+
+        // Apply deleted status filter
+        if ($request->has('deleted') && $request->deleted != '') {
+            if ($request->deleted == 'true') {
+                $newsQuery->onlyTrashed();
+            } elseif ($request->deleted == 'false') {
+                $newsQuery->whereNull('deleted_at');
+            }
         }
 
         // Apply sorting
@@ -75,7 +102,14 @@ class AdminNewsController extends Controller
         $newsQuery->orderBy($sortBy, $sortDir);
 
         // Paginate results
-        $news = $newsQuery->paginate(10)->appends($request->query()); // Append query string to pagination links
+        $news = $newsQuery->paginate(10)->appends([
+            'search' => $request->query('search'),
+            'category_id' => $request->query('category_id'),
+            'status' => $request->query('status'),
+            'deleted' => $request->query('deleted'),
+            'sort_by' => $request->query('sort_by'),
+            'sort_dir' => $request->query('sort_dir'),
+        ]);
 
         // Note: The view 'admin.news.list' will need to be adjusted
         // to access related data via Eloquent relationships (e.g., $item->user->name, $item->category->name)
@@ -264,14 +298,14 @@ class AdminNewsController extends Controller
 
     public function destroy(string $slug) // Use slug for consistency
     {
-        // Find the news item by slug
+        // Find the newsItem by slug
         $newsItem = News::where('slug', $slug)->firstOrFail();
 
         // Set status to 'archived' before soft deleting
         $newsItem->status = 'archived'; // Assuming 'archived' is a valid status
         $newsItem->save();
 
-        // Soft delete the news item
+        // Soft delete the newsItem
         $newsItem->delete(); // This performs a soft delete because of the trait
 
         return redirect()->route('admin.news.list')->with('success', 'Tin tức đã được chuyển vào thùng rác.');

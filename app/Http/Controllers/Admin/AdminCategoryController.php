@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
+use App\Models\News; // Import the News model
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth; // Import Auth facade
@@ -43,8 +44,21 @@ class AdminCategoryController extends Controller
             });
         }
 
+        // Apply status filter
+        if ($request->has('status') && $request->status != '') {
+            $categoryQuery->where('status', $request->status);
+        }
+
+        // Apply deleted status filter
+        if ($request->has('deleted') && $request->deleted != '') {
+            if ($request->deleted == 'true') {
+                $categoryQuery->onlyTrashed();
+            } elseif ($request->deleted == 'false') {
+                $categoryQuery->whereNull('deleted_at');
+            }
+        }
+
         // Apply sorting
-        $categoryQuery->orderByRaw('deleted_at IS NULL DESC'); // Keep active/deleted sorting first
         $categoryQuery->orderBy($sortBy, $sortDir); // Apply user sorting
 
         // Paginate results
@@ -202,6 +216,11 @@ class AdminCategoryController extends Controller
     {
         // Find the category by slug
         $category = Category::where('slug', $slug)->firstOrFail();
+
+        // Check if the category has any associated news
+        if (News::where('category_id', $category->id)->exists()) {
+            return redirect()->route('admin.category.list')->with('error', 'Không thể xóa danh mục này vì nó đang được sử dụng bởi một hoặc nhiều tin tức.');
+        }
 
         // Set status to 'Hidden' before soft deleting
         $category->status = 'Ẩn';

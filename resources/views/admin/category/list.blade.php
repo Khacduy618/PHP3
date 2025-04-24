@@ -4,11 +4,15 @@
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h2>{{ $title }}</h2>
         <div>
-            <button id="show-api-data" class="btn btn-info me-2">Show API Data</button> {{-- Added API Button --}}
-            <a href="{{ route('admin.category.create') }}" class="btn btn-success">Thêm loại tin</a> {{-- Corrected route
-            --}}
+            <button id="show-api-data" class="btn btn-info me-2">Show API Data</button>
+            <a href="{{ route('admin.category.create') }}" class="btn btn-success">Thêm loại tin</a>
         </div>
     </div>
+    @if(session('error'))
+        <div class="alert alert-danger">
+            {{ session('error') }}
+        </div>
+    @endif
     <div class="card">
         <div class="card-header">
             <div class="dropdown pc-h-item d-inline-flex d-md-none">
@@ -35,20 +39,36 @@
                 </div>
             </div>
             {{-- Functional Search Form for Desktop --}}
-            <div class="pc-h-item d-none d-md-inline-flex ms-auto p-2"> {{-- Added padding --}}
-                <form action="{{ route('admin.category.list') }}" method="GET"> {{-- Removed header-search class --}}
-                    <div class="input-group"> {{-- Use input-group --}}
+            <div class="pc-h-item d-none d-md-inline-flex ms-auto p-2">
+                <form action="{{ route('admin.category.list') }}" method="GET">
+                    <div class="input-group">
                         <span class="input-group-text"><i data-feather="search" class="icon-search"></i></span>
                         <input type="search" name="search" class="form-control" placeholder="Tìm kiếm..."
-                            value="{{ request('search') }}"> {{-- Simplified placeholder --}}
-                        {{-- Preserve sorting parameters --}}
-                        @if(request('sort_by'))
-                            <input type="hidden" name="sort_by" value="{{ request('sort_by') }}">
-                        @endif
-                        @if(request('sort_dir'))
-                            <input type="hidden" name="sort_dir" value="{{ request('sort_dir') }}">
-                        @endif
-                        {{-- No need for a submit button, pressing Enter works --}}
+                            value="{{ request('search') }}">
+                        <select name="status" class="form-select">
+                            <option value="">Tất cả trạng thái</option>
+                            <option value="Hiện" {{ request('status') == 'Hiện' ? 'selected' : '' }}>Hiện</option>
+                            <option value="Ẩn" {{ request('status') == 'Ẩn' ? 'selected' : '' }}>Ẩn</option>
+                        </select>
+                        <select name="deleted" class="form-select">
+                            <option value="">Tất cả trạng thái xóa</option>
+                            <option value="false" {{ request('deleted') == 'false' ? 'selected' : '' }}>Hoạt động</option>
+                            <option value="true" {{ request('deleted') == 'true' ? 'selected' : '' }}>Đã xóa</option>
+                        </select>
+                        <!-- <select name="sort_by" class="form-select">
+                                        <option value="">Sắp xếp theo</option>
+                                        <option value="id" {{ request('sort_by') == 'id' ? 'selected' : '' }}>Mã danh mục</option>
+                                        <option value="name" {{ request('sort_by') == 'name' ? 'selected' : '' }}>Tên danh mục
+                                        </option>
+                                        <option value="created_at" {{ request('sort_by') == 'created_at' ? 'selected' : '' }}>Ngày
+                                            tạo</option>
+                                    </select>
+                                    <select name="sort_dir" class="form-select">
+                                        <option value="asc" {{ request('sort_dir') == 'asc' ? 'selected' : '' }}>Tăng dần</option>
+                                        <option value="desc" {{ request('sort_dir') == 'desc' ? 'selected' : '' }}>Giảm dần</option>
+                                    </select> -->
+                        <button type="submit" class="btn btn-success">Lọc</button>
+                    </div>
                 </form>
             </div>
         </div>
@@ -57,16 +77,28 @@
                 <thead class="table-light">
                     <tr>
                         <th>
-                            @php $sortIcon = $sortBy == 'id' ? ($sortDir == 'asc' ? 'ti-arrow-up' : 'ti-arrow-down') : 'ti-arrows-sort'; @endphp
-                            <a
-                                href="{{ route('admin.category.list', ['sort_by' => 'id', 'sort_dir' => $sortBy == 'id' && $sortDir == 'asc' ? 'desc' : 'asc']) }}">
+                            @php
+                                $sortIcon = $sortBy == 'id' ? ($sortDir == 'asc' ? 'ti-arrow-up' : 'ti-arrow-down') :
+                                    'ti-arrows-sort';
+                                $url = route('admin.category.list', array_merge(request()->query(), [
+                                    'sort_by' => 'id',
+                                    'sort_dir' => $sortBy == 'id' && $sortDir == 'asc' ? 'desc' : 'asc'
+                                ]));
+                            @endphp
+                            <a href="{{ $url }}">
                                 Mã danh mục<i class="ti {{ $sortIcon }}"></i>
                             </a>
                         </th>
                         <th>
-                            @php $sortIcon = $sortBy == 'name' ? ($sortDir == 'asc' ? 'ti-arrow-up' : 'ti-arrow-down') : 'ti-arrows-sort'; @endphp
-                            <a
-                                href="{{ route('admin.category.list', ['sort_by' => 'name', 'sort_dir' => $sortBy == 'name' && $sortDir == 'asc' ? 'desc' : 'asc']) }}">
+                            @php
+                                $sortIcon = $sortBy == 'name' ? ($sortDir == 'asc' ? 'ti-arrow-up' : 'ti-arrow-down') :
+                                    'ti-arrows-sort';
+                                $url = route('admin.category.list', array_merge(request()->query(), [
+                                    'sort_by' => 'name',
+                                    'sort_dir' => $sortBy == 'name' && $sortDir == 'asc' ? 'desc' : 'asc'
+                                ]));
+                            @endphp
+                            <a href="{{$url}}">
                                 Tên danh mục <i class="ti {{ $sortIcon }}"></i>
                             </a>
                         </th>
@@ -74,9 +106,17 @@
                         <th>Trạng thái</th> {{-- Regular Status --}}
                         <th>Trạng thái Xóa</th> {{-- Deleted Status --}}
                         <th>
-                            @php $sortIcon = $sortBy == 'created_at' ? ($sortDir == 'asc' ? 'ti-arrow-up' : 'ti-arrow-down') : 'ti-arrows-sort'; @endphp
-                            <a
-                                href="{{ route('admin.category.list', ['sort_by' => 'created_at', 'sort_dir' => $sortBy == 'created_at' && $sortDir == 'asc' ? 'desc' : 'asc']) }}">
+                            @php
+                                $sortIcon = $sortBy == 'created_at' ? ($sortDir == 'asc' ? 'ti-arrow-up' : 'ti-arrow-down') :
+                                    'ti-arrows-sort';
+                                $url = route('admin.category.list', array_merge(request()->query(), [
+                                    'sort_by' =>
+                                        'created_at',
+                                    'sort_dir' => $sortBy == 'created_at' && $sortDir == 'asc' ? 'desc' :
+                                        'asc'
+                                ]));
+                            @endphp
+                            <a href="{{$url}}">
                                 Ngày tạo <i class="ti {{ $sortIcon }}"></i>
                             </a>
                         </th>
@@ -177,38 +217,37 @@
                 {{ $categories->links() }}
             </div>
         </div>
-    </div>
 
-    {{-- Area to display JSON data --}}
-    <div class="mt-4">
-        <h3>API Data Output:</h3>
-        <pre id="json-output" class="bg-light p-3 border rounded"
-            style="max-height: 400px; overflow-y: auto; display: none;"></pre>
-    </div>
+        {{-- Area to display JSON data --}}
+        <div class="mt-4">
+            <h3>API Data Output:</h3>
+            <pre id="json-output" class="bg-light p-3 border rounded"
+                style="max-height: 400px; overflow-y: auto; display: none;"></pre>
+        </div>
 @endsection
 
-@push('scripts') {{-- Use a stack for scripts if your layout supports it, otherwise place script tag directly --}}
-    <script>
-        document.getElementById('show-api-data').addEventListener('click', function () {
-            const outputArea = document.getElementById('json-output');
-            outputArea.textContent = 'Loading...'; // Show loading indicator
-            outputArea.style.display = 'block'; // Make area visible
+    @push('scripts') {{-- Use a stack for scripts if your layout supports it, otherwise place script tag directly --}}
+        <script>
+            document.getElementById('show-api-data').addEventListener('click', function () {
+                const outputArea = document.getElementById('json-output');
+                outputArea.textContent = 'Loading...'; // Show loading indicator
+                outputArea.style.display = 'block'; // Make area visible
 
-            fetch('{{ route('api.categories.index') }}') // Use Laravel route helper
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    // Format JSON nicely with 2-space indentation
-                    outputArea.textContent = JSON.stringify(data, null, 2);
-                })
-                .catch(error => {
-                    console.error('Error fetching API data:', error);
-                    outputArea.textContent = `Error loading data: ${error.message}`;
-                });
-        });
-    </script>
-@endpush
+                fetch('{{ route('api.categories.index') }}') // Use Laravel route helper
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Format JSON nicely with 2-space indentation
+                        outputArea.textContent = JSON.stringify(data, null, 2);
+                    })
+                    .catch(error => {
+                        console.error('Error fetching API data:', error);
+                        outputArea.textContent = `Error loading data: ${error.message}`;
+                    });
+            });
+        </script>
+    @endpush

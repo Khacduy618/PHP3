@@ -45,8 +45,17 @@ class AdminUserController extends Controller
             });
         }
 
+        // Apply status filter
+        if ($request->has('status') && $request->status != '') {
+            if ($request->status == 'active') {
+                $userQuery->whereNull('deleted_at');
+            } elseif ($request->status == 'inactive') {
+                $userQuery->onlyTrashed();
+            }
+        }
+
         // Apply sorting
-        $userQuery->orderByRaw('deleted_at IS NULL DESC'); // Keep active/deleted sorting first
+        // $userQuery->orderByRaw('deleted_at IS NULL DESC'); // Keep active/deleted sorting first
         $userQuery->orderBy($sortBy, $sortDir); // Apply user sorting
 
         // Paginate results
@@ -77,8 +86,8 @@ class AdminUserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'role' => ['required', 'in:user,admin'],
-            'avatar' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'], // Avatar validation
+            'role' => ['required', 'in:viewer,admin'],
+            'avatar' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048', 'dimensions:max_width=300,max_height=300'], // Avatar validation
         ]);
 
         $avatarPath = null;
@@ -143,8 +152,8 @@ class AdminUserController extends Controller
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
             // Password is optional, but if provided, must meet requirements and be confirmed
             'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
-            'role' => ['required', 'in:user,admin'],
-            'avatar' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'], // Avatar validation
+            'role' => ['required', 'in:viewer,admin'],
+            'avatar' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048', 'dimensions:max_width=300,max_height=300'], // Avatar validation
         ]);
 
         // Prepare data for update

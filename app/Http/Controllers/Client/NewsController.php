@@ -189,7 +189,9 @@ class NewsController extends Controller
 
         // Find IDs of child categories if the query matches a parent category name
         $childCategoryIds = Category::query()
-            ->whereNull('parent_id') // Find parent categories
+            ->whereNull('parent_id')
+            ->where('status', 'Hiện')
+            ->whereNull('deleted_at')
             ->where('name', 'LIKE', '%' . $query . '%') // Matching the query
             ->with('children:id,parent_id') // Eager load only children IDs
             ->get()
@@ -201,6 +203,7 @@ class NewsController extends Controller
         // Search for news items
         $newsItems = News::query()
             ->where('status', 'published')
+            ->whereNull('deleted_at')
             ->where(function ($q) use ($query, $childCategoryIds) {
                 // Match title, content, summary
                 $q->where('title', 'LIKE', '%' . $query . '%')
@@ -228,6 +231,7 @@ class NewsController extends Controller
         // Fetch data for included blocks (Sidebar and Trending)
         $hotNews = News::query()
             ->where('status', 'published')
+            ->whereNull('deleted_at')
             ->where('is_hot', true)
             ->orderByDesc('created_at')
             ->limit(5) // Consistent limit with other places
@@ -249,6 +253,7 @@ class NewsController extends Controller
 
         $trendingNews = News::query()
             ->where('status', 'published')
+            ->whereNull('deleted_at')
             ->where('is_trending', true)
             ->orderByDesc('views')
             ->limit(10)

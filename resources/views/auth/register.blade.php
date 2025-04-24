@@ -45,7 +45,7 @@
                                 <div class="row">
                                     <div class="col-4 d-flex align-items-center justify-content-center">
                                         <label for="avatar">
-                                            Chọn ảnh đại diện:
+                                            Chọn ảnh đại diện: <small>(300px x 300px)</small>
                                         </label>
                                     </div>
                                     <div class="col-8">
@@ -58,6 +58,7 @@
                                                 <strong>{{ $message }}</strong>
                                             </span>
                                         @enderror
+
                                     </div>
                                 </div>
                             </div>

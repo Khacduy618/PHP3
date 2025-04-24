@@ -48,7 +48,7 @@
             <div class="mb-3">
                 <label for="role" class="form-label">Vai trò</label>
                 <select class="form-select @error('role') is-invalid @enderror" id="role" name="role" required>
-                    <option value="user" {{ old('role', $user->role) == 'user' ? 'selected' : '' }}>Người dùng</option>
+                    <option value="viewer" {{ old('viewer', $user->role) == 'viewer' ? 'selected' : '' }}>Người dùng</option>
                     {{-- Prevent demoting the last admin if needed (add logic here or in controller) --}}
                     <option value="admin" {{ old('role', $user->role) == 'admin' ? 'selected' : '' }}>Quản trị viên</option>
                 </select>
@@ -59,7 +59,8 @@
 
             {{-- Avatar --}}
             <div class="mb-3">
-                <label for="avatar" class="form-label">Ảnh đại diện (Để trống nếu không muốn thay đổi)</label>
+                <label for="avatar" class="form-label">Ảnh đại diện (Để trống nếu không muốn thay đổi)<small>(300px x
+                        300px)</small></label>
                 <input type="file" class="form-control @error('avatar') is-invalid @enderror" id="avatar" name="avatar"
                     accept="image/*">
                 {{-- Display current avatar --}}
